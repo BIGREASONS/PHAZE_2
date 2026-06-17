@@ -45,16 +45,26 @@ st.markdown(f"""
 
 map_data = ds.get_map_data()
 
+# ── Interactive Time Scrubbing ──────────────────────────────────────────
+st.markdown('<div style="margin-bottom:5px;color:#B5B8B1;font-size:0.85rem;font-weight:600;letter-spacing:0.05em;">TEMPORAL FILTER (TIME MACHINE)</div>', unsafe_allow_html=True)
+hours = [f"{str(i).zfill(2)}:00" for i in range(24)]
+selected_time = st.select_slider("Time", options=hours, value="12:00", label_visibility="collapsed")
+selected_hour = int(selected_time.split(":")[0])
+
+filtered_map_data = map_data[map_data["hour"] == selected_hour]
+
+st.markdown(f"<div style='color:#7D857F;font-size:0.75rem;margin-bottom:20px;'>Showing {len(filtered_map_data)} incidents occurring during {selected_time}</div>", unsafe_allow_html=True)
+
 # ── Hotspot Analysis ──────────────────────────────────────────────────────
 render_section_header("Hotspot Analysis", subtitle="Hexagonal density clusters", accent=TEAL_L)
-if not map_data.empty:
-    deck = create_operations_map([create_cluster_layer(map_data)], height=450)
+if not filtered_map_data.empty:
+    deck = create_operations_map([create_cluster_layer(filtered_map_data)], height=450)
     st.pydeck_chart(deck)
 
 # ── Density Map ───────────────────────────────────────────────────────────
 render_section_header("Density Heatmap", accent=TEAL_L)
-if not map_data.empty:
-    deck = create_operations_map([create_heatmap_layer(map_data)], height=400)
+if not filtered_map_data.empty:
+    deck = create_operations_map([create_heatmap_layer(filtered_map_data)], height=400)
     st.pydeck_chart(deck)
 
 # ── Corridor Intelligence ────────────────────────────────────────────────

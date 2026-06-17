@@ -39,11 +39,27 @@ def apply_theme():
 
     .stApp > header { background-color: var(--bg) !important; }
 
-    /* ── Sidebar ──────────────────────────────────────────────────── */
+    /* ── Sidebar (Floating Enterprise Panel) ──────────────────────── */
     section[data-testid="stSidebar"] {
-        background-color: var(--bg-secondary) !important;
-        border-right: 1px solid var(--border) !important;
+        background-color: rgba(18, 23, 21, 0.96) !important;
+        backdrop-filter: blur(2px) !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 16px !important;
+        margin: 16px 0 16px 16px !important;
+        height: calc(100vh - 32px) !important;
     }
+    
+    section[data-testid="stSidebarNav"] a {
+        border-radius: 6px !important;
+        transition: transform 150ms ease, background 150ms ease !important;
+    }
+    
+    section[data-testid="stSidebarNav"] a:hover {
+        transform: translateX(2px) !important;
+        background-color: rgba(46, 166, 111, 0.1) !important;
+        border-left: 2px solid var(--success) !important;
+    }
+    
     section[data-testid="stSidebar"] .stMarkdown p,
     section[data-testid="stSidebar"] .stMarkdown span {
         color: var(--text-sec) !important;
@@ -140,33 +156,53 @@ def apply_theme():
         color: var(--text) !important;
     }
 
-    /* ── Expander ─────────────────────────────────────────────────── */
+    /* ── Expander (Translucent Block) ────────────────────────────── */
     .streamlit-expanderHeader {
-        background-color: var(--bg-secondary) !important;
+        background-color: rgba(18, 23, 21, 0.94) !important;
+        backdrop-filter: blur(2px) !important;
         border: 1px solid var(--border) !important;
         border-radius: var(--radius) !important;
         color: var(--text) !important;
         font-weight: 500 !important;
+        transition: background-color 150ms ease !important;
+    }
+    .streamlit-expanderHeader:hover {
+        background-color: #1F2624 !important;
     }
     .streamlit-expanderContent {
-        background-color: var(--bg-secondary) !important;
+        background-color: rgba(27, 34, 32, 0.6) !important;
         border: 1px solid var(--border) !important;
         border-top: none !important;
+        border-bottom-left-radius: var(--radius) !important;
+        border-bottom-right-radius: var(--radius) !important;
+        padding: 12px !important;
     }
 
-    /* ── Dataframes ───────────────────────────────────────────────── */
-    .stDataFrame {
+    /* ── UI Panels & Floating Cards ──────────────────────────────── */
+    [data-testid="stMetric"], .stMetric {
+        background-color: rgba(18, 23, 21, 0.94) !important;
+        backdrop-filter: blur(2px) !important;
         border: 1px solid var(--border) !important;
         border-radius: var(--radius) !important;
+        padding: 12px 16px !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3) !important;
+        transition: transform 150ms ease, border-color 150ms ease !important;
+    }
+    
+    [data-testid="stMetric"]:hover, .stMetric:hover {
+        transform: translateY(-2px) !important;
+        border-color: #38423F !important;
     }
 
-    /* ── Metric ───────────────────────────────────────────────────── */
-    [data-testid="stMetric"] {
-        background-color: var(--bg-secondary);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        padding: 12px 16px;
+    div[data-testid="stDataFrame"] {
+        border: 1px solid var(--border) !important;
+        border-radius: var(--radius) !important;
+        background-color: rgba(18, 23, 21, 0.94) !important;
+        backdrop-filter: blur(2px) !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2) !important;
     }
+
+    /* ── Metric Label ─────────────────────────────────────────────── */
     [data-testid="stMetricLabel"] {
         color: var(--muted) !important;
         font-size: 0.75rem !important;

@@ -26,13 +26,27 @@ TEXT = "#F3F2EE"
 # ── Data ──────────────────────────────────────────────────────────────────
 @st.cache_resource
 def get_ds():
-    ds = DataService()
-    ds.load_data()
-    return ds
+    return DataService()
 
 ds = get_ds()
-df = ds.df
+ds.load_data()
 analytics = ds.get_analytics()
+df = ds.df
+
+# ── Alert Toasts (Real-Time Simulation) ──────────────────────────────────
+if "alert_shown" not in st.session_state:
+    st.session_state.alert_shown = set()
+    
+# Find a critical incident to toast once per session
+incidents, _ = ds.get_incidents({"requires_road_closure": 1}, page_size=5)
+for _, row in incidents.iterrows():
+    iid = row["id"]
+    if iid not in st.session_state.alert_shown:
+        st.session_state.alert_shown.add(iid)
+        corridor = row.get("corridor", "Unknown Corridor")
+        risk = row.get("risk_score", 0.89)
+        st.toast(f"**Critical Incident Detected**\n\n{corridor}\n\nRisk Score: {risk:.2f}", icon="🚨")
+        break
 
 # ── Header ────────────────────────────────────────────────────────────────
 st.markdown(f"""
