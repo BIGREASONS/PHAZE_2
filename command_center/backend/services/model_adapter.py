@@ -20,23 +20,62 @@ class ModelInterface(ABC):
 
     @abstractmethod
     def load_model(self) -> None:
-        """Load model weights / artifacts into memory."""
+        """Load model weights / artifacts into memory (e.g., joblib.load)."""
 
     @abstractmethod
-    def predict(self, features: Dict[str, Any]) -> Dict[str, Any]:
-        """Return {probability, confidence, severity, recommended_action}."""
+    def predict(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+        """Run single prediction on an incident payload.
+        
+        Expected Input:
+            payload: Dict containing feature key-values.
+            
+        Expected Output Schema:
+            {
+                "probability": float (0.0 to 1.0),
+                "risk_level": str ("LOW", "MEDIUM", "HIGH", "CRITICAL"),
+                "recommended_action": str (Human readable string)
+            }
+        """
 
     @abstractmethod
-    def predict_batch(self, features_list: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        """Batch prediction."""
+    def predict_batch(self, payloads: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Run batch prediction on multiple incidents.
+        
+        Expected Input:
+            payloads: List of Dicts containing feature key-values.
+            
+        Expected Output Schema:
+            List of dictionaries matching the `predict` Output Schema.
+        """
 
     @abstractmethod
-    def explain(self, features: Dict[str, Any]) -> Dict[str, Any]:
-        """Return {feature_contributions, top_positive, top_negative}."""
+    def explain(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+        """Generate explainability metrics (SHAP/LIME) for a single incident.
+        
+        Expected Input:
+            payload: Dict containing feature key-values.
+            
+        Expected Output Schema:
+            {
+                "feature_importances": Dict[str, float] (e.g., {"weather": 0.4, "time": 0.1}),
+                "top_positive": List[str] (e.g., ["weather", "road_type"]),
+                "top_negative": List[str] (e.g., ["day_of_week"])
+            }
+        """
 
     @abstractmethod
     def get_model_metadata(self) -> Dict[str, Any]:
-        """Return {name, version, training_date, metrics, status}."""
+        """Return model metadata for the monitoring dashboard.
+        
+        Expected Output Schema:
+            {
+                "name": str (e.g., "CatBoost + LightGBM Ensemble"),
+                "version": str,
+                "training_date": str,
+                "status": str ("ONLINE", "OFFLINE"),
+                "metrics": Dict[str, float] (e.g., {"F1": 0.92, "AUC": 0.96})
+            }
+        """
 
 
 # ═══════════════════════════════════════════════════════════════════════════
