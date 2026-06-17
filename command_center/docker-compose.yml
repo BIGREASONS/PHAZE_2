@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  backend:
+    build: .
+    command: uvicorn backend.main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../astram_review_bundle_v2:/data
+    environment:
+      - DATA_PATH=/data/review_bundle/Astram event data_anonymized - Astram event data_anonymizedb40ac87.csv
+
+  frontend:
+    build: .
+    command: streamlit run frontend/app.py --server.port 8501 --server.address 0.0.0.0 --server.headless true
+    ports:
+      - "8501:8501"
+    volumes:
+      - ../astram_review_bundle_v2:/data
+    environment:
+      - DATA_PATH=/data/review_bundle/Astram event data_anonymized - Astram event data_anonymizedb40ac87.csv
+    depends_on:
+      - backend

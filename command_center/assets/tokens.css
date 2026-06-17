@@ -1,0 +1,57 @@
+:root {
+  /* ── Core Palette ───────────────────────────────── */
+  --bg:           #0A0D0C;
+  --bg-secondary: #121715;
+  --bg-tertiary:  #1B2220;
+  --border:       #232A28;
+
+  /* ── Typography ─────────────────────────────────── */
+  --text:         #F3F2EE;
+  --text-sec:     #B5B8B1;
+  --muted:        #7D857F;
+
+  /* ── Page Accents ───────────────────────────────── */
+  --executive:    #C2A878;
+  --executive-l:  #D8BF8C;
+  --ops:          #1C7C54;
+  --ops-l:        #2EA66F;
+  --predict:      #2F5D9F;
+  --predict-l:    #4C7CC0;
+  --explain:      #B87333;
+  --explain-l:    #D08C4A;
+  --analytics:    #6E1F28;
+  --analytics-l:  #8B2635;
+  --geo:          #0F766E;
+  --geo-l:        #14B8A6;
+  --monitor:      #8B949E;
+  --monitor-l:    #C5CCD4;
+  --showcase:     #D9C7A3;
+  --showcase-l:   #E7DBC2;
+
+  /* ── Status ─────────────────────────────────────── */
+  --success:      #2EA66F;
+  --warning:      #B8833B;
+  --critical:     #B04A4A;
+  --info:         #2F5D9F;
+  --neutral:      #8B949E;
+
+  /* ── Spacing (4px base) ─────────────────────────── */
+  --space-1:      4px;
+  --space-2:      8px;
+  --space-3:      12px;
+  --space-4:      16px;
+  --space-5:      20px;
+  --space-6:      24px;
+  --space-8:      32px;
+  --space-10:     40px;
+
+  /* ── Radius ─────────────────────────────────────── */
+  --radius-sm:    4px;
+  --radius:       6px;
+  --radius-lg:    8px;
+  --radius-xl:    12px;
+
+  /* ── Transitions ────────────────────────────────── */
+  --transition:   150ms ease;
+  --transition-slow: 200ms ease;
+}
