@@ -60,19 +60,31 @@ skf = StratifiedKFold(n_splits=FOLDS, shuffle=True, random_state=42)
 fold_indices = list(skf.split(X, y))
 
 
-def generate_oof(model_fn, name, X_arr, y_arr, folds):
-    """Train model_fn() per fold, return OOF probabilities."""
+def generate_oof(model_fn, name, X_arr, y_arr, folds, use_iloc=False):
+    """Train model_fn() per fold, return OOF probabilities.
+    If use_iloc=True, X_arr must be a DataFrame and indexing uses .iloc.
+    Otherwise X_arr is a numpy array and indexing uses [].
+    """
     oof = np.zeros(len(y_arr), dtype=np.float64)
     for i, (tr, va) in enumerate(folds):
         print(f"  {name} fold {i+1}/{FOLDS} ...", end=" ", flush=True)
         t0 = time.time()
         mdl = model_fn()
-        mdl.fit(X_arr[tr], y_arr[tr])
+        if use_iloc:
+            mdl.fit(X_arr.iloc[tr], y_arr[tr])
+        else:
+            mdl.fit(X_arr[tr], y_arr[tr])
         if hasattr(mdl, 'predict_proba'):
-            oof[va] = mdl.predict_proba(X_arr[va])[:, 1]
+            if use_iloc:
+                oof[va] = mdl.predict_proba(X_arr.iloc[va])[:, 1]
+            else:
+                oof[va] = mdl.predict_proba(X_arr[va])[:, 1]
         else:
             # RidgeClassifier → decision_function → sigmoid
-            oof[va] = expit(mdl.decision_function(X_arr[va]))
+            if use_iloc:
+                oof[va] = expit(mdl.decision_function(X_arr.iloc[va]))
+            else:
+                oof[va] = expit(mdl.decision_function(X_arr[va]))
         print(f"{time.time()-t0:.1f}s")
     return oof
 
@@ -82,15 +94,16 @@ print("\n" + "="*72)
 print("LEVEL 1: Base Models")
 print("="*72)
 
-X_np = X.values.astype(np.float32)
+X_np = X.values.astype(np.float32)  # For non-CatBoost models
 
 # Names of seed-bagged OOF files produced by phase2
+# phase2_seed_bagging.py saves as oof_seedbag_{Family}.npy
 phase2_oof_map = {
-    'catboost':    'oof_catboost_seedbag.npy',
-    'lightgbm':    'oof_lightgbm_seedbag.npy',
-    'xgboost':     'oof_xgboost_seedbag.npy',
-    'randomforest':'oof_rf_seedbag.npy',
-    'extratrees':  'oof_et_seedbag.npy',
+    'catboost':    'oof_seedbag_CatBoost.npy',
+    'lightgbm':    'oof_seedbag_LightGBM.npy',
+    'xgboost':     'oof_seedbag_XGBoost.npy',
+    'randomforest':'oof_seedbag_RandomForest.npy',
+    'extratrees':  'oof_seedbag_ExtraTrees.npy',
 }
 
 l1_oofs = {}
@@ -101,13 +114,13 @@ for tag, fname in phase2_oof_map.items():
     if os.path.exists(fname):
         arr = np.load(fname)
         if len(arr) == N:
-            print(f"  ✓ Loaded {fname} ({tag})")
+            print(f"  [OK] Loaded {fname} ({tag})")
             l1_oofs[tag] = arr
             l1_names.append(tag)
         else:
-            print(f"  ✗ {fname} length mismatch ({len(arr)} vs {N}), will regenerate")
+            print(f"  [X] {fname} length mismatch ({len(arr)} vs {N}), will regenerate")
     else:
-        print(f"  ✗ {fname} not found, will regenerate")
+        print(f"  [X] {fname} not found, will regenerate")
 
 # Generate fresh OOFs for any missing base models
 models_to_generate = {}
@@ -151,7 +164,11 @@ if 'extratrees' not in l1_oofs:
 
 for tag, fn in models_to_generate.items():
     print(f"\n  Generating OOF for {tag} ...")
-    oof = generate_oof(fn, tag, X_np, y, fold_indices)
+    if tag == 'catboost':
+        # CatBoost needs DataFrame with integer-coded categoricals, NOT float32 numpy
+        oof = generate_oof(fn, tag, X, y, fold_indices, use_iloc=True)
+    else:
+        oof = generate_oof(fn, tag, X_np, y, fold_indices, use_iloc=False)
     l1_oofs[tag] = oof
     l1_names.append(tag)
     np.save(f'oof_{tag}_fresh.npy', oof)
@@ -161,13 +178,13 @@ tabpfn_file = 'oof_tabpfn_random.npy'
 if os.path.exists(tabpfn_file):
     arr = np.load(tabpfn_file)
     if len(arr) == N:
-        print(f"  ✓ Loaded {tabpfn_file} (tabpfn)")
+        print(f"  [OK] Loaded {tabpfn_file} (tabpfn)")
         l1_oofs['tabpfn'] = arr
         l1_names.append('tabpfn')
     else:
-        print(f"  ✗ {tabpfn_file} length mismatch, skipping")
+        print(f"  [X] {tabpfn_file} length mismatch, skipping")
 else:
-    print(f"  ✗ {tabpfn_file} not found, skipping TabPFN")
+    print(f"  [X] {tabpfn_file} not found, skipping TabPFN")
 
 # Report Level 1 metrics
 print(f"\nLevel 1 models: {l1_names}")
