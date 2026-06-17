@@ -1,0 +1,250 @@
+{
+  "experiment": "Phase 1 - Distribution Discovery",
+  "dataset_size": 8173,
+  "split_index": 6538,
+  "D1_adversarial_validation": {
+    "CatBoost": {
+      "mean_auc": 0.8649,
+      "std_auc": 0.0062,
+      "fold_aucs": [
+        0.8672,
+        0.8734,
+        0.8605,
+        0.8678,
+        0.8554
+      ],
+      "top10_features": [
+        [
+          "zone",
+          59.2832
+        ],
+        [
+          "weekday",
+          8.9422
+        ],
+        [
+          "event_cause",
+          5.3592
+        ],
+        [
+          "police_station",
+          5.2987
+        ],
+        [
+          "lat",
+          4.8698
+        ],
+        [
+          "lon",
+          4.8102
+        ],
+        [
+          "corridor",
+          3.9446
+        ],
+        [
+          "veh_type",
+          3.6122
+        ],
+        [
+          "hour",
+          3.4842
+        ],
+        [
+          "event_type",
+          0.3956
+        ]
+      ]
+    },
+    "LightGBM": {
+      "mean_auc": 0.8669,
+      "std_auc": 0.0057,
+      "fold_aucs": [
+        0.8706,
+        0.8735,
+        0.8632,
+        0.8694,
+        0.8575
+      ],
+      "top10_features": [
+        [
+          "lon",
+          1792.6
+        ],
+        [
+          "lat",
+          1732.2
+        ],
+        [
+          "hour",
+          1104.6
+        ],
+        [
+          "weekday",
+          758.6
+        ],
+        [
+          "police_station",
+          609.4
+        ],
+        [
+          "event_cause",
+          568.6
+        ],
+        [
+          "veh_type",
+          516.0
+        ],
+        [
+          "corridor",
+          415.4
+        ],
+        [
+          "zone",
+          131.2
+        ],
+        [
+          "event_type",
+          48.4
+        ]
+      ]
+    },
+    "RandomForest": {
+      "mean_auc": 0.8716,
+      "std_auc": 0.005,
+      "fold_aucs": [
+        0.8735,
+        0.8792,
+        0.8643,
+        0.8727,
+        0.8683
+      ],
+      "top10_features": [
+        [
+          "zone",
+          0.3088
+        ],
+        [
+          "lat",
+          0.1362
+        ],
+        [
+          "lon",
+          0.1333
+        ],
+        [
+          "weekday",
+          0.0984
+        ],
+        [
+          "hour",
+          0.0846
+        ],
+        [
+          "event_cause",
+          0.0833
+        ],
+        [
+          "police_station",
+          0.0653
+        ],
+        [
+          "corridor",
+          0.044
+        ],
+        [
+          "veh_type",
+          0.0403
+        ],
+        [
+          "event_type",
+          0.0059
+        ]
+      ]
+    }
+  },
+  "D1_overall_avg_auc": 0.8678,
+  "D1_shift_detected": true,
+  "D2_distribution_shift": {
+    "date_month": {
+      "chi2": 5118.3556,
+      "p_value": 0.0,
+      "dof": 6,
+      "significant": true,
+      "train_pct": {
+        "1": 22.44,
+        "2": 20.8,
+        "3": 14.55,
+        "4": 0.0,
+        "9": 0.02,
+        "11": 15.16,
+        "12": 27.04
+      },
+      "test_pct": {
+        "1": 0.0,
+        "2": 0.0,
+        "3": 61.42,
+        "4": 38.58,
+        "9": 0.0,
+        "11": 0.0,
+        "12": 0.0
+      }
+    },
+    "date_quarter": {
+      "chi2": 3214.6329,
+      "p_value": 0.0,
+      "dof": 3,
+      "significant": true,
+      "train_pct": {
+        "1": 57.79,
+        "2": 0.0,
+        "3": 0.02,
+        "4": 42.2
+      },
+      "test_pct": {
+        "1": 61.42,
+        "2": 38.58,
+        "3": 0.0,
+        "4": 0.0
+      }
+    },
+    "corridor": {
+      "chi2": 60.5423,
+      "p_value": 1.9e-05,
+      "dof": 22,
+      "significant": true,
+      "n_categories_total": 23,
+      "n_only_train": 0,
+      "n_only_test": 0
+    },
+    "event_type": {
+      "chi2": 8.8152,
+      "p_value": 0.002987,
+      "dof": 1,
+      "significant": true,
+      "n_categories_total": 2,
+      "n_only_train": 0,
+      "n_only_test": 0
+    },
+    "event_cause": {
+      "chi2": 424.68,
+      "p_value": 0.0,
+      "dof": 16,
+      "significant": true,
+      "n_categories_total": 17,
+      "n_only_train": 3,
+      "n_only_test": 0
+    },
+    "target_rate": {
+      "train_rate": 0.0818,
+      "test_rate": 0.0862,
+      "delta": 0.0044
+    },
+    "date_range": {
+      "train_start": "2023-09-29 23:38:19.342539+00:00",
+      "train_end": "2024-03-15 00:33:46.091753+00:00",
+      "test_start": "2024-03-15 00:45:27.205345+00:00",
+      "test_end": "2024-04-08 17:22:58.849385+00:00"
+    }
+  }
+}

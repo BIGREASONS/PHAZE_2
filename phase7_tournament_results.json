@@ -1,0 +1,155 @@
+{
+  "tournament_results": [
+    {
+      "model": "Single CatBoost",
+      "phase": "P1-Single",
+      "file": "oof_random_CatBoost.npy",
+      "roc_auc": 0.802619,
+      "pr_auc": 0.403283,
+      "coverage": 1.0,
+      "n_valid": 8173
+    },
+    {
+      "model": "Single LightGBM",
+      "phase": "P1-Single",
+      "file": "oof_random_LightGBM.npy",
+      "roc_auc": 0.800255,
+      "pr_auc": 0.417101,
+      "coverage": 1.0,
+      "n_valid": 8173
+    },
+    {
+      "model": "Single XGBoost",
+      "phase": "P1-Single",
+      "file": "oof_random_XGBoost.npy",
+      "roc_auc": 0.797671,
+      "pr_auc": 0.405843,
+      "coverage": 1.0,
+      "n_valid": 8173
+    },
+    {
+      "model": "Single RandomForest",
+      "phase": "P1-Single",
+      "file": "oof_random_RandomForest.npy",
+      "roc_auc": 0.808406,
+      "pr_auc": 0.423017,
+      "coverage": 1.0,
+      "n_valid": 8173
+    },
+    {
+      "model": "Single ExtraTrees",
+      "phase": "P1-Single",
+      "file": "oof_random_ExtraTrees.npy",
+      "roc_auc": 0.79834,
+      "pr_auc": 0.409801,
+      "coverage": 1.0,
+      "n_valid": 8173
+    },
+    {
+      "model": "Single Logistic",
+      "phase": "P1-Single",
+      "file": "oof_random_Logistic.npy",
+      "roc_auc": 0.786191,
+      "pr_auc": 0.347283,
+      "coverage": 1.0,
+      "n_valid": 8173
+    },
+    {
+      "model": "TabPFN",
+      "phase": "P1-Single",
+      "file": "oof_tabpfn_random.npy",
+      "roc_auc": 0.805432,
+      "pr_auc": 0.409332,
+      "coverage": 1.0,
+      "n_valid": 8173
+    }
+  ],
+  "ranking": [
+    {
+      "Rank": 1,
+      "model": "Single RandomForest",
+      "phase": "P1-Single",
+      "roc_auc": 0.808406,
+      "pr_auc": 0.423017,
+      "coverage": 1.0
+    },
+    {
+      "Rank": 2,
+      "model": "Single LightGBM",
+      "phase": "P1-Single",
+      "roc_auc": 0.800255,
+      "pr_auc": 0.417101,
+      "coverage": 1.0
+    },
+    {
+      "Rank": 3,
+      "model": "Single ExtraTrees",
+      "phase": "P1-Single",
+      "roc_auc": 0.79834,
+      "pr_auc": 0.409801,
+      "coverage": 1.0
+    },
+    {
+      "Rank": 4,
+      "model": "TabPFN",
+      "phase": "P1-Single",
+      "roc_auc": 0.805432,
+      "pr_auc": 0.409332,
+      "coverage": 1.0
+    },
+    {
+      "Rank": 5,
+      "model": "Single XGBoost",
+      "phase": "P1-Single",
+      "roc_auc": 0.797671,
+      "pr_auc": 0.405843,
+      "coverage": 1.0
+    },
+    {
+      "Rank": 6,
+      "model": "Single CatBoost",
+      "phase": "P1-Single",
+      "roc_auc": 0.802619,
+      "pr_auc": 0.403283,
+      "coverage": 1.0
+    },
+    {
+      "Rank": 7,
+      "model": "Single Logistic",
+      "phase": "P1-Single",
+      "roc_auc": 0.786191,
+      "pr_auc": 0.347283,
+      "coverage": 1.0
+    }
+  ],
+  "recommendation": {
+    "best_model": "Single RandomForest",
+    "best_pr_auc": 0.423017,
+    "best_roc_auc": 0.808406,
+    "best_phase": "P1-Single",
+    "best_file": "oof_random_RandomForest.npy"
+  },
+  "top3": [
+    {
+      "rank": 1,
+      "model": "Single RandomForest",
+      "pr_auc": 0.423017,
+      "roc_auc": 0.808406
+    },
+    {
+      "rank": 2,
+      "model": "Single LightGBM",
+      "pr_auc": 0.417101,
+      "roc_auc": 0.800255
+    },
+    {
+      "rank": 3,
+      "model": "Single ExtraTrees",
+      "pr_auc": 0.409801,
+      "roc_auc": 0.79834
+    }
+  ],
+  "n_models_scored": 7,
+  "n_models_total": 19,
+  "N": 8173
+}
