@@ -49,6 +49,20 @@ def apply_theme():
         color: var(--text-sec) !important;
         font-size: 0.85rem;
     }
+    /* Lock sidebar open and hide collapse arrows */
+    [data-testid="collapsedControl"] { display: none !important; }
+    [data-testid="stSidebarCollapseButton"] { display: none !important; }
+    
+    /* Disable Streamlit rerun dimming/fading and force wide layout */
+    [data-testid="stAppViewBlockContainer"] { 
+        opacity: 1 !important; 
+        filter: none !important; 
+        transition: none !important; 
+        max-width: 100% !important; 
+        padding-left: 5% !important; 
+        padding-right: 5% !important; 
+    }
+    [data-testid="stStatusWidget"] { visibility: hidden !important; display: none !important; }
 
     /* ── Typography ───────────────────────────────────────────────── */
     h1, h2, h3, h4, h5, h6 {
@@ -60,7 +74,7 @@ def apply_theme():
     h1 { font-size: 1.75rem !important; }
     h2 { font-size: 1.35rem !important; }
     h3 { font-size: 1.1rem !important; }
-    p, li, span, label, .stMarkdown {
+    p, li, label, .stMarkdown {
         font-family: 'Inter', sans-serif !important;
         color: var(--text-sec) !important;
     }
@@ -93,11 +107,11 @@ def apply_theme():
     }
 
     /* ── Inputs ───────────────────────────────────────────────────── */
-    .stSelectbox > div > div,
-    .stMultiSelect > div > div,
-    .stTextInput > div > div > input,
-    .stNumberInput > div > div > input,
-    .stDateInput > div > div > input {
+    .stSelectbox [data-baseweb="select"],
+    .stMultiSelect [data-baseweb="select"],
+    .stTextInput input,
+    .stNumberInput input,
+    .stDateInput input {
         background-color: var(--bg-tertiary) !important;
         color: var(--text) !important;
         border: 1px solid var(--border) !important;

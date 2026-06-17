@@ -4,6 +4,8 @@ import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
 import streamlit as st
+
+st.set_page_config(page_title="ASTraM Command Center", page_icon="🚦", layout="wide", initial_sidebar_state="expanded")
 import pandas as pd
 import plotly.graph_objects as go
 
@@ -11,6 +13,7 @@ from frontend.components.theme import apply_theme, render_footer
 from frontend.components.ui import render_kpi_row, render_section_header, render_leaderboard_table
 from frontend.components.maps import create_heatmap_layer, create_operations_map
 from backend.services.data_service import DataService
+from backend.services.pdf_generator import generate_executive_pdf
 
 apply_theme()
 
@@ -37,10 +40,21 @@ st.markdown(f"""
     <span style="color:{GOLD};font-size:0.6rem;">&#9646;</span>
     <h1 style="margin:0;font-size:1.5rem;">Executive Overview</h1>
 </div>
+</div>
 <p style="color:#7D857F;font-size:0.8rem;margin-bottom:20px;">
     30-second strategic briefing &mdash; incident landscape at a glance
 </p>
 """, unsafe_allow_html=True)
+
+# ── Export ────────────────────────────────────────────────────────────────
+if st.download_button(
+    label="📄 Generate Executive Brief",
+    data=generate_executive_pdf(analytics),
+    file_name=f"ASTraM_Executive_Brief_{pd.Timestamp.now().strftime('%Y%m%d')}.pdf",
+    mime="application/pdf"
+):
+    pass
+st.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
 
 # ── KPI Row ───────────────────────────────────────────────────────────────
 render_kpi_row([

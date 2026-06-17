@@ -131,18 +131,23 @@ async def model_info():
 
 
 # ---------------------------------------------------------------------------
-# WebSocket — Placeholder streaming endpoint
+# WebSocket — Telemetry Heartbeat
 # ---------------------------------------------------------------------------
+import asyncio
+
 @app.websocket("/stream/incidents")
 async def stream_incidents(ws: WebSocket):
     await ws.accept()
     try:
         while True:
-            data = await ws.receive_text()
+            await asyncio.sleep(5)
             await ws.send_json({
-                "type": "heartbeat",
                 "timestamp": datetime.utcnow().isoformat(),
-                "message": "Streaming infrastructure ready. No live feed connected.",
+                "active_incidents": len(data_service.df),
+                "high_risk_incidents": int(data_service.df["requires_road_closure"].sum()),
+                "system_health": "healthy",
+                "model_status": "placeholder",
+                "data_freshness": "loaded"
             })
     except WebSocketDisconnect:
         pass

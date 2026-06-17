@@ -54,6 +54,8 @@ st.sidebar.markdown("""
 
 model_info = st.session_state.model.get_model_metadata()
 data_rows = len(st.session_state.data_service.df)
+num_corridors = st.session_state.data_service.df["corridor"].nunique()
+num_modules = len([f for f in os.listdir(os.path.join(os.path.dirname(__file__), "pages")) if f.endswith(".py") and not f.startswith("_")])
 render_sidebar_health(model_info, data_rows)
 
 st.sidebar.markdown("---")
@@ -77,17 +79,17 @@ st.markdown("""
     <div style="margin-top:32px;display:flex;justify-content:center;gap:16px;flex-wrap:wrap;">
         <div style="background:#121715;border:1px solid #232A28;border-radius:6px;
             padding:16px 24px;min-width:140px;">
-            <div style="color:#C2A878;font-size:1.8rem;font-weight:700;">{:,}</div>
+            <div style="color:#C2A878;font-size:1.8rem;font-weight:700;">{0:,}</div>
             <div style="color:#7D857F;font-size:0.7rem;text-transform:uppercase;">Incidents</div>
         </div>
         <div style="background:#121715;border:1px solid #232A28;border-radius:6px;
             padding:16px 24px;min-width:140px;">
-            <div style="color:#1C7C54;font-size:1.8rem;font-weight:700;">23</div>
+            <div style="color:#1C7C54;font-size:1.8rem;font-weight:700;">{1}</div>
             <div style="color:#7D857F;font-size:0.7rem;text-transform:uppercase;">Corridors</div>
         </div>
         <div style="background:#121715;border:1px solid #232A28;border-radius:6px;
             padding:16px 24px;min-width:140px;">
-            <div style="color:#2F5D9F;font-size:1.8rem;font-weight:700;">8</div>
+            <div style="color:#2F5D9F;font-size:1.8rem;font-weight:700;">{2}</div>
             <div style="color:#7D857F;font-size:0.7rem;text-transform:uppercase;">Modules</div>
         </div>
     </div>
@@ -95,6 +97,6 @@ st.markdown("""
         Select a module from the sidebar to begin
     </p>
 </div>
-""".format(data_rows), unsafe_allow_html=True)
+""".format(data_rows, num_corridors, num_modules), unsafe_allow_html=True)
 
 render_footer()

@@ -5,6 +5,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
 import streamlit as st
 
+st.set_page_config(page_title="ASTraM Command Center", page_icon="🚦", layout="wide", initial_sidebar_state="expanded")
+
 from frontend.components.theme import apply_theme, render_footer
 from frontend.components.ui import render_section_header, render_status_badge
 from frontend.components.maps import create_incident_layer, create_operations_map, get_risk_color
@@ -30,9 +32,11 @@ st.markdown(f"""
     <h1 style="margin:0;font-size:1.5rem;">Competition Showcase</h1>
 </div>
 <p style="color:#7D857F;font-size:0.8rem;margin-bottom:20px;">
-    One-click scenario demonstrations for judges &mdash; test the system in under 30 seconds
+    Emergency Response Simulator &mdash; observe system telemetry and intelligence as an incident unfolds
 </p>
 """, unsafe_allow_html=True)
+
+import time
 
 # ── Scenario Cards ────────────────────────────────────────────────────────
 render_section_header("Scenario Library", accent=CHAMP)
@@ -57,140 +61,104 @@ for row_start in range(0, len(SCENARIOS), 3):
             </div>
             """, unsafe_allow_html=True)
 
-            if st.button(f"Run Scenario", key=f"sc_{idx}", use_container_width=True):
-                result = model.predict(sc["features"])
-                st.session_state.showcase_results[sc["name"]] = result
+            if st.button(f"Deploy Simulator", key=f"sc_{idx}", use_container_width=True):
+                st.session_state.active_scenario = sc
+                st.session_state.run_sim = True
+                # st.rerun() # Let it fall through to render the simulator below
 
-            # Show result if exists
-            if sc["name"] in st.session_state.showcase_results:
-                res = st.session_state.showcase_results[sc["name"]]
-                sev_colors = {"LOW": "#2EA66F", "MEDIUM": "#B8833B",
-                              "HIGH": "#D08C4A", "CRITICAL": "#B04A4A"}
-                sev_c = sev_colors.get(res["severity"], CHAMP)
-                st.markdown(f"""
-                <div style="background:#0A0D0C;border:1px solid {sev_c}40;border-radius:4px;
-                    padding:10px;margin-top:4px;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;">
-                        <span style="color:{sev_c};font-size:1.4rem;font-weight:700;
-                            font-family:'Inter Tight',sans-serif;">{res['probability']:.1%}</span>
-                        {render_status_badge(res['severity'], sev_c)}
-                    </div>
-                    <div style="color:#7D857F;font-size:0.65rem;margin-top:4px;">
-                        Confidence: {res['confidence']:.1%}
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-
-# ── Incident Replay System ───────────────────────────────────────────────
+# ── Emergency Response Simulator ─────────────────────────────────────────
 st.markdown("<div style='height:24px'></div>", unsafe_allow_html=True)
-render_section_header("Incident Replay System", subtitle="Control-room simulation", accent=CHAMP)
+render_section_header("Emergency Response Simulator", subtitle="Live telemetry feed", accent=CHAMP)
 
-st.markdown(f"""
-<div style="color:{CHAMP};font-size:0.7rem;background:{BG2};border:1px solid #232A28;
-    border-radius:4px;padding:8px 12px;margin-bottom:12px;">
-    Simulate how an incident evolves from initial report to resolution
-</div>
-""", unsafe_allow_html=True)
-
-time_point = st.select_slider(
-    "Timeline",
-    options=[0, 5, 10, 20, 30],
-    format_func=lambda x: f"T+{x} min",
-    value=0,
-    key="replay_time",
-)
-
-state = REPLAY_STATES.get(time_point, REPLAY_STATES[0])
-
-# Use a scenario for the replay
-replay_sc = SCENARIOS[0]  # Major Accident
-replay_lat = replay_sc["features"]["latitude"]
-replay_lon = replay_sc["features"]["longitude"]
-
-rc1, rc2 = st.columns([3, 2])
-
-with rc1:
-    # Map showing the incident
+if "active_scenario" in st.session_state and st.session_state.get("run_sim"):
+    sc = st.session_state.active_scenario
+    
+    # Placeholders for progressive reveal
+    map_ph = st.empty()
+    risk_ph = st.empty()
+    pred_ph = st.empty()
+    timeline_ph = st.empty()
+    
+    # 1. Map Fly-To Animation
     map_df = pd.DataFrame([{
-        "latitude": replay_lat,
-        "longitude": replay_lon,
-        "color": get_risk_color(0.85 if time_point < 30 else 0.15),
+        "latitude": sc["features"]["latitude"],
+        "longitude": sc["features"]["longitude"],
+        "color": get_risk_color(0.85),
     }])
-    deck = create_operations_map(
-        [create_incident_layer(map_df)],
-        center=(replay_lat, replay_lon), zoom=14, height=350,
-    )
-    st.pydeck_chart(deck)
-
-with rc2:
-    status_colors = {
-        "Reported": "#B04A4A",
-        "Acknowledged": "#B8833B",
-        "In Progress": "#D08C4A",
-        "Mitigation": "#2F5D9F",
-        "Resolved": "#2EA66F",
-    }
-    s_color = status_colors.get(state["status"], CHAMP)
-
-    st.markdown(f"""
-    <div style="background:{BG2};border:1px solid #232A28;border-radius:6px;padding:20px;">
-        <div style="color:#7D857F;font-size:0.6rem;text-transform:uppercase;
-            letter-spacing:0.08em;margin-bottom:12px;">Incident State</div>
-
-        <div style="margin-bottom:16px;">
-            <div style="color:#7D857F;font-size:0.7rem;">Status</div>
-            <div style="margin-top:4px;">
-                {render_status_badge(state['status'], s_color)}
-            </div>
+    deck = create_operations_map([create_incident_layer(map_df)], center=(sc["features"]["latitude"], sc["features"]["longitude"]), zoom=14, height=350)
+    map_ph.pydeck_chart(deck)
+    time.sleep(0.8)
+    
+    # 2. Risk Panel
+    risk_ph.markdown(f"""
+    <div style="background:{BG2};border:1px solid #B04A4A;border-left:4px solid #B04A4A;border-radius:6px;padding:16px;margin-bottom:16px;">
+        <div style="color:#B04A4A;font-weight:700;font-size:1.1rem;margin-bottom:4px;">🚨 INCIDENT DETECTED</div>
+        <div style="color:#F3F2EE;font-size:0.9rem;">{sc['name']}</div>
+        <div style="color:#B5B8B1;font-size:0.8rem;margin-top:4px;">Location: {sc['features']['corridor']}</div>
+    </div>
+    """, unsafe_allow_html=True)
+    time.sleep(1.0)
+    
+    # 3. Prediction Appears
+    res = model.predict(sc["features"])
+    sev_colors = {"LOW": "#2EA66F", "MEDIUM": "#B8833B", "HIGH": "#D08C4A", "CRITICAL": "#B04A4A"}
+    sev_c = sev_colors.get(res["severity"], CHAMP)
+    pred_ph.markdown(f"""
+    <div style="display:flex;gap:16px;margin-bottom:16px;">
+        <div style="flex:1;background:#0A0D0C;border:1px solid {sev_c}40;border-radius:6px;padding:16px;">
+            <div style="color:#7D857F;font-size:0.65rem;text-transform:uppercase;">AI Risk Prediction</div>
+            <div style="color:{sev_c};font-size:1.8rem;font-weight:700;margin:4px 0;">{res['probability']:.1%}</div>
+            {render_status_badge(res['severity'], sev_c)}
         </div>
-
-        <div style="margin-bottom:16px;">
-            <div style="color:#7D857F;font-size:0.7rem;">Elapsed</div>
-            <div style="color:#F3F2EE;font-size:1.2rem;font-weight:600;
-                font-family:'Inter Tight',sans-serif;">T+{time_point} min</div>
-        </div>
-
-        <div style="margin-bottom:16px;">
-            <div style="color:#7D857F;font-size:0.7rem;">Resources Deployed</div>
-            <div style="color:{CHAMP};font-size:1.6rem;font-weight:700;
-                font-family:'Inter Tight',sans-serif;">{state['resources']}</div>
-        </div>
-
-        <div>
-            <div style="color:#7D857F;font-size:0.7rem;">Current Action</div>
-            <div style="color:#B5B8B1;font-size:0.8rem;margin-top:4px;">
-                {state['action']}
-            </div>
+        <div style="flex:1;background:#0A0D0C;border:1px solid #232A28;border-radius:6px;padding:16px;">
+            <div style="color:#7D857F;font-size:0.65rem;text-transform:uppercase;">Key Risk Drivers</div>
+            <div style="color:#B5B8B1;font-size:0.8rem;margin-top:8px;">1. {list(res['feature_contributions'].keys())[0]} (+{list(res['feature_contributions'].values())[0]:.2f})</div>
+            <div style="color:#B5B8B1;font-size:0.8rem;margin-top:4px;">2. {list(res['feature_contributions'].keys())[1]} (+{list(res['feature_contributions'].values())[1]:.2f})</div>
+            <div style="color:#B5B8B1;font-size:0.8rem;margin-top:4px;">3. {list(res['feature_contributions'].keys())[2]} (+{list(res['feature_contributions'].values())[2]:.2f})</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
-
-    # Timeline dots
-    st.markdown("<div style='margin-top:12px;'>", unsafe_allow_html=True)
+    time.sleep(1.2)
+    
+    # 4. Timeline Replay
     for tp in [0, 5, 10, 20, 30]:
-        is_active = tp <= time_point
-        dot_color = "#2EA66F" if is_active else "#232A28"
-        st.markdown(f"""
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-            <div style="width:8px;height:8px;border-radius:50%;background:{dot_color};"></div>
-            <span style="color:{'#B5B8B1' if is_active else '#7D857F'};font-size:0.7rem;">
-                T+{tp} — {REPLAY_STATES[tp]['status']}
-            </span>
+        state = REPLAY_STATES.get(tp, REPLAY_STATES[0])
+        status_colors = {"Reported": "#B04A4A", "Acknowledged": "#B8833B", "In Progress": "#D08C4A", "Mitigation": "#2F5D9F", "Resolved": "#2EA66F"}
+        s_color = status_colors.get(state["status"], CHAMP)
+        
+        timeline_ph.markdown(f"""
+        <div style="background:{BG2};border:1px solid #232A28;border-radius:6px;padding:20px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                <div style="color:#F3F2EE;font-size:1.2rem;font-weight:600;">Timeline: T+{tp} min</div>
+                {render_status_badge(state['status'], s_color)}
+            </div>
+            <div style="display:flex;gap:32px;">
+                <div>
+                    <div style="color:#7D857F;font-size:0.7rem;">Resources Deployed</div>
+                    <div style="color:{CHAMP};font-size:1.4rem;font-weight:700;">{state['resources']}</div>
+                </div>
+                <div>
+                    <div style="color:#7D857F;font-size:0.7rem;">Current Action</div>
+                    <div style="color:#B5B8B1;font-size:0.9rem;margin-top:4px;">{state['action']}</div>
+                </div>
+            </div>
+            <div style="margin-top:16px;height:4px;background:#0A0D0C;border-radius:2px;overflow:hidden;">
+                <div style="height:100%;width:{(tp/30)*100}%;background:{s_color};transition:width 0.5s ease;"></div>
+            </div>
         </div>
         """, unsafe_allow_html=True)
-    st.markdown("</div>", unsafe_allow_html=True)
+        time.sleep(1.0 if tp < 30 else 0)
+        
+    st.session_state.run_sim = False
 
-# ── Quick Stats ──────────────────────────────────────────────────────────
-if st.session_state.showcase_results:
-    render_section_header("Demo Summary", accent=CHAMP)
-    summary_data = []
-    for name, res in st.session_state.showcase_results.items():
-        summary_data.append({
-            "Scenario": name,
-            "Probability": f"{res['probability']:.1%}",
-            "Severity": res["severity"],
-            "Confidence": f"{res['confidence']:.1%}",
-        })
-    st.dataframe(pd.DataFrame(summary_data), use_container_width=True, hide_index=True)
+elif "active_scenario" not in st.session_state:
+    st.markdown(f"""
+    <div style="background:{BG2};border:1px solid #232A28;border-radius:6px;
+        padding:32px;text-align:center;">
+        <div style="color:#7D857F;font-size:0.85rem;">
+            Select a scenario from the library above to deploy the simulator
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
 render_footer()

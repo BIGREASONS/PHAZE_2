@@ -4,6 +4,8 @@ import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
 import streamlit as st
+
+st.set_page_config(page_title="ASTraM Command Center", page_icon="🚦", layout="wide", initial_sidebar_state="expanded")
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
@@ -11,6 +13,7 @@ import plotly.graph_objects as go
 from frontend.components.theme import apply_theme, render_footer
 from frontend.components.ui import render_section_header, render_leaderboard_table
 from backend.services.data_service import DataService
+from backend.services.pdf_generator import generate_executive_pdf
 
 apply_theme()
 
@@ -125,7 +128,7 @@ st.dataframe(pivot, use_container_width=True)
 
 # ── Export ────────────────────────────────────────────────────────────────
 render_section_header("Export Data", accent=BURG_L)
-c1, c2 = st.columns(2)
+c1, c2, c3 = st.columns(3)
 with c1:
     csv_data = ds.export_data("csv")
     st.download_button("Download CSV", csv_data, "astram_incidents.csv", "text/csv",
@@ -134,5 +137,14 @@ with c2:
     json_data = ds.export_data("json")
     st.download_button("Download JSON", json_data, "astram_incidents.json", "application/json",
                        use_container_width=True)
+with c3:
+    analytics = ds.get_analytics()
+    st.download_button(
+        "📄 Analytics Snapshot PDF",
+        generate_executive_pdf(analytics, title="Analytics Snapshot Report"),
+        f"ASTraM_Analytics_{pd.Timestamp.now().strftime('%Y%m%d')}.pdf",
+        "application/pdf",
+        use_container_width=True
+    )
 
 render_footer()

@@ -4,6 +4,8 @@ import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
 import streamlit as st
+
+st.set_page_config(page_title="ASTraM Command Center", page_icon="🚦", layout="wide", initial_sidebar_state="expanded")
 import pandas as pd
 from datetime import datetime, timedelta
 
@@ -79,8 +81,8 @@ with left:
                 f"Showing {len(filtered)} of {total} incidents</div>", unsafe_allow_html=True)
 
     incident_ids = filtered["id"].tolist()
-    selected_id = st.selectbox("Select Incident", incident_ids, key="icc_sel",
-                               label_visibility="collapsed") if incident_ids else None
+    selected_id = st.selectbox("Search Incident ID", incident_ids, key="icc_sel",
+                               label_visibility="visible") if incident_ids else None
 
     # Render incident cards
     for _, row in filtered.head(20).iterrows():

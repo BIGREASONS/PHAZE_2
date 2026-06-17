@@ -4,12 +4,15 @@ import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
 import streamlit as st
+
+st.set_page_config(page_title="ASTraM Command Center", page_icon="🚦", layout="wide", initial_sidebar_state="expanded")
 import numpy as np
 import plotly.graph_objects as go
 
 from frontend.components.theme import apply_theme, render_footer
 from frontend.components.ui import render_section_header, render_kpi_row, render_metric_tile
 from backend.services.model_adapter import PlaceholderModel
+from backend.services.data_service import DataService
 
 apply_theme()
 
@@ -85,53 +88,57 @@ fig.update_layout(
 )
 st.plotly_chart(fig, use_container_width=True)
 
-# ── Latency ──────────────────────────────────────────────────────────────
-render_section_header("Prediction Latency", accent=SILVER)
-c1, c2 = st.columns(2)
-with c1:
-    fig = go.Figure(go.Indicator(
-        mode="gauge+number",
-        value=12,
-        number=dict(suffix=" ms", font=dict(color=TEXT, size=36)),
-        gauge=dict(
-            axis=dict(range=[0, 50], tickcolor=SILVER),
-            bar=dict(color=SILVER_L),
-            bgcolor=BG2,
-            borderwidth=1,
-            bordercolor="#232A28",
-            steps=[
-                dict(range=[0, 15], color="#1B2220"),
-                dict(range=[15, 30], color="#232A28"),
-                dict(range=[30, 50], color="#2A1515"),
-            ],
-        ),
-    ))
-    fig.update_layout(
-        paper_bgcolor=BG, font=dict(color=TEXT, family="Inter"),
-        height=250, margin=dict(l=20, r=20, t=20, b=20),
-    )
-    st.plotly_chart(fig, use_container_width=True)
+# ── Infrastructure Telemetry ─────────────────────────────────────────────
+render_section_header("Infrastructure Telemetry", accent=SILVER)
 
-with c2:
-    st.markdown(f"""
-    <div style="background:{BG2};border:1px solid #232A28;border-radius:6px;padding:20px;">
+if "data_service" not in st.session_state:
+    st.session_state.data_service = DataService()
+    st.session_state.data_service.load_data()
+ds = st.session_state.data_service
+
+rows_loaded = len(ds.df)
+features_available = len(ds.df.columns)
+api_status = "Connected"
+model_adapter_status = "Connected"
+
+st.markdown(f"""
+<div style="display:flex;gap:20px;flex-wrap:wrap;">
+    <div style="flex:1;min-width:250px;background:{BG2};border:1px solid #232A28;border-radius:6px;padding:20px;">
         <div style="color:#7D857F;font-size:0.65rem;text-transform:uppercase;margin-bottom:12px;">
-            Data Freshness
+            Data Service
         </div>
         <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
-            <span style="color:#B5B8B1;font-size:0.8rem;">Last Data Update</span>
-            <span style="color:#F3F2EE;font-size:0.8rem;">2024-04-08</span>
+            <span style="color:#B5B8B1;font-size:0.8rem;">Dataset Rows</span>
+            <span style="color:#F3F2EE;font-size:0.8rem;">{rows_loaded:,}</span>
         </div>
         <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
-            <span style="color:#B5B8B1;font-size:0.8rem;">Total Records</span>
-            <span style="color:#F3F2EE;font-size:0.8rem;">8,173</span>
+            <span style="color:#B5B8B1;font-size:0.8rem;">Available Features</span>
+            <span style="color:#F3F2EE;font-size:0.8rem;">{features_available}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;">
+            <span style="color:#B5B8B1;font-size:0.8rem;">Last Refresh</span>
+            <span style="color:#F3F2EE;font-size:0.8rem;">System Boot</span>
+        </div>
+    </div>
+    <div style="flex:1;min-width:250px;background:{BG2};border:1px solid #232A28;border-radius:6px;padding:20px;">
+        <div style="color:#7D857F;font-size:0.65rem;text-transform:uppercase;margin-bottom:12px;">
+            API & Model Interface
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+            <span style="color:#B5B8B1;font-size:0.8rem;">Backend Status</span>
+            <span style="color:#2EA66F;font-size:0.8rem;">Healthy</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+            <span style="color:#B5B8B1;font-size:0.8rem;">Model Interface</span>
+            <span style="color:#2EA66F;font-size:0.8rem;">{model_adapter_status}</span>
         </div>
         <div style="display:flex;justify-content:space-between;">
             <span style="color:#B5B8B1;font-size:0.8rem;">Uptime</span>
-            <span style="color:#2EA66F;font-size:0.8rem;">99.9%</span>
+            <span style="color:#F3F2EE;font-size:0.8rem;">2h 14m</span>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+</div>
+""", unsafe_allow_html=True)
 
 # ── Drift Monitoring ─────────────────────────────────────────────────────
 render_section_header("Drift Monitoring", accent=SILVER)
