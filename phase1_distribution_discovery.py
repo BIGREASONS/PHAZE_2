@@ -1,5 +1,5 @@
 """
-Phase 1 – Distribution Discovery
+Phase 1 - Distribution Discovery
 =================================
 D1: Adversarial Validation  (CatBoost / LightGBM / RandomForest)
 D2: Distribution Shift Report (chi-squared tests on categoricals + date bins)
@@ -17,9 +17,9 @@ from scipy.stats import chi2_contingency
 warnings.filterwarnings("ignore")
 np.random.seed(42)
 
-# ──────────────────────────────────────────────
+# ----------------------------------------------
 # Data loading
-# ──────────────────────────────────────────────
+# ----------------------------------------------
 DATA = 'Astram event data_anonymized - Astram event data_anonymizedb40ac87.csv'
 df = pd.read_csv(DATA, low_memory=False)
 df['t'] = pd.to_datetime(df['created_date'], errors='coerce')
@@ -36,17 +36,17 @@ for c in cats:
 
 print(f"Dataset: {len(df)} rows,  target-rate: {y.mean():.4f}")
 
-# ──────────────────────────────────────────────
+# ----------------------------------------------
 # Split boundary: first 80 % vs last 20 %
-# ──────────────────────────────────────────────
+# ----------------------------------------------
 split_idx = int(len(df) * 0.8)
 adv_label = np.zeros(len(df), dtype=int)
 adv_label[split_idx:] = 1
 print(f"Split index: {split_idx}  |  train-like: {(adv_label==0).sum()}  |  test-like: {(adv_label==1).sum()}")
 
-# ──────────────────────────────────────────────
+# ----------------------------------------------
 # Feature matrix (OrdinalEncoder for cats)
-# ──────────────────────────────────────────────
+# ----------------------------------------------
 oe = OrdinalEncoder(handle_unknown='use_encoded_value', unknown_value=-1)
 X_cats = oe.fit_transform(df[cats])
 X_nums = df[nums].fillna(0).values
@@ -64,10 +64,10 @@ print(f"Feature matrix shape: {X.shape}")
 print()
 
 # ======================================================================
-# EXPERIMENT D1 – Adversarial Validation
+# EXPERIMENT D1 - Adversarial Validation
 # ======================================================================
 print("=" * 70)
-print("  EXPERIMENT D1 – Adversarial Validation")
+print("  EXPERIMENT D1 - Adversarial Validation")
 print("=" * 70)
 
 skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
@@ -129,15 +129,15 @@ for clf_name, clf_factory in classifiers.items():
         'top10_features': top10,
     }
 
-    print(f"\n{'─'*50}")
+    print(f"\n{'-'*50}")
     print(f"  {clf_name}")
-    print(f"{'─'*50}")
-    print(f"  ROC-AUC:  {mean_auc:.4f} ± {std_auc:.4f}")
+    print(f"{'-'*50}")
+    print(f"  ROC-AUC:  {mean_auc:.4f} +/- {std_auc:.4f}")
     print(f"  Fold AUCs: {[round(a,4) for a in fold_aucs]}")
     if mean_auc > 0.6:
-        print(f"  ⚠  AUC > 0.6 → significant distribution shift detected!")
+        print(f"  [!] AUC > 0.6 -> significant distribution shift detected!")
     else:
-        print(f"  ✓  AUC ≤ 0.6 → distributions appear similar.")
+        print(f"  [OK] AUC <= 0.6 -> distributions appear similar.")
     print(f"  Top-10 Feature Importances:")
     for rank, (fname, imp) in enumerate(top10, 1):
         print(f"    {rank:2d}. {fname:<20s}  {imp:.4f}")
@@ -147,17 +147,17 @@ avg_across = np.mean([d1_results[k]['mean_auc'] for k in d1_results])
 print(f"\n{'='*70}")
 print(f"  D1 OVERALL:  Average AUC across classifiers = {avg_across:.4f}")
 if avg_across > 0.6:
-    print("  ⚠  VERDICT: Train/test distributions DIFFER significantly.")
+    print("  [!] VERDICT: Train/test distributions DIFFER significantly.")
 else:
-    print("  ✓  VERDICT: Train/test distributions are reasonably similar.")
+    print("  [OK] VERDICT: Train/test distributions are reasonably similar.")
 print(f"{'='*70}\n")
 
 
 # ======================================================================
-# EXPERIMENT D2 – Distribution Shift Report
+# EXPERIMENT D2 - Distribution Shift Report
 # ======================================================================
 print("=" * 70)
-print("  EXPERIMENT D2 – Distribution Shift Report")
+print("  EXPERIMENT D2 - Distribution Shift Report")
 print("=" * 70)
 
 df_train = df.iloc[:split_idx].copy()
@@ -165,10 +165,10 @@ df_test  = df.iloc[split_idx:].copy()
 
 d2_results = {}
 
-# ── D2a: Date distributions (month / quarter) ──
-print(f"\n{'─'*50}")
+# -- D2a: Date distributions (month / quarter) --
+print(f"\n{'-'*50}")
 print("  Date Distributions")
-print(f"{'─'*50}")
+print(f"{'-'*50}")
 
 for period_name, accessor in [('month', lambda s: s.dt.month), ('quarter', lambda s: s.dt.quarter)]:
     train_vals = accessor(df_train['t']).dropna().astype(int)
@@ -183,9 +183,9 @@ for period_name, accessor in [('month', lambda s: s.dt.month), ('quarter', lambd
     test_pct  = (test_counts / test_counts.sum() * 100).round(2)
 
     print(f"\n  {period_name.upper()} distribution (%):")
-    header = f"  {'Period':<10s} {'Train%':>8s} {'Test%':>8s} {'Δ':>8s}"
+    header = f"  {'Period':<10s} {'Train%':>8s} {'Test%':>8s} {'Delta':>8s}"
     print(header)
-    print(f"  {'─'*36}")
+    print(f"  {'-'*36}")
     for p in all_periods:
         delta = test_pct.get(p, 0) - train_pct.get(p, 0)
         print(f"  {p:<10d} {train_pct.get(p,0):>8.2f} {test_pct.get(p,0):>8.2f} {delta:>+8.2f}")
@@ -198,11 +198,11 @@ for period_name, accessor in [('month', lambda s: s.dt.month), ('quarter', lambd
     else:
         chi2, pval, dof = 0.0, 1.0, 0
 
-    print(f"  χ² = {chi2:.2f},  p = {pval:.6f},  dof = {dof}")
+    print(f"  Chi2 = {chi2:.2f},  p = {pval:.6f},  dof = {dof}")
     if pval < 0.05:
-        print(f"  ⚠  Significant difference in {period_name} distribution (p < 0.05)")
+        print(f"  [!] Significant difference in {period_name} distribution (p < 0.05)")
     else:
-        print(f"  ✓  No significant difference in {period_name} distribution")
+        print(f"  [OK] No significant difference in {period_name} distribution")
 
     d2_results[f'date_{period_name}'] = {
         'chi2': round(chi2, 4),
@@ -213,11 +213,11 @@ for period_name, accessor in [('month', lambda s: s.dt.month), ('quarter', lambd
         'test_pct':  {str(k): float(v) for k, v in test_pct.items()},
     }
 
-# ── D2b: Categorical distributions ──
+# -- D2b: Categorical distributions --
 for cat_col in ['corridor', 'event_type', 'event_cause']:
-    print(f"\n{'─'*50}")
+    print(f"\n{'-'*50}")
     print(f"  {cat_col} Distribution")
-    print(f"{'─'*50}")
+    print(f"{'-'*50}")
 
     train_vc = df_train[cat_col].value_counts()
     test_vc  = df_test[cat_col].value_counts()
@@ -234,9 +234,9 @@ for cat_col in ['corridor', 'event_type', 'event_cause']:
     top15 = total_counts.sort_values(ascending=False).head(15).index.tolist()
 
     print(f"  Showing top 15 categories (of {len(all_vals)} total):")
-    header = f"  {'Category':<35s} {'Train%':>8s} {'Test%':>8s} {'Δ':>8s}"
+    header = f"  {'Category':<35s} {'Train%':>8s} {'Test%':>8s} {'Delta':>8s}"
     print(header)
-    print(f"  {'─'*61}")
+    print(f"  {'-'*61}")
     for val in top15:
         delta = test_pct.get(val, 0) - train_pct.get(val, 0)
         label = str(val)[:33]
@@ -251,11 +251,11 @@ for cat_col in ['corridor', 'event_type', 'event_cause']:
     else:
         chi2, pval, dof = 0.0, 1.0, 0
 
-    print(f"\n  χ² = {chi2:.2f},  p = {pval:.6f},  dof = {dof}")
+    print(f"\n  Chi2 = {chi2:.2f},  p = {pval:.6f},  dof = {dof}")
     if pval < 0.05:
-        print(f"  ⚠  Significant difference in {cat_col} distribution (p < 0.05)")
+        print(f"  [!] Significant difference in {cat_col} distribution (p < 0.05)")
     else:
-        print(f"  ✓  No significant difference in {cat_col} distribution")
+        print(f"  [OK] No significant difference in {cat_col} distribution")
 
     # Categories that appear only in one split
     only_train = set(train_vc.index) - set(test_vc.index)
@@ -275,27 +275,27 @@ for cat_col in ['corridor', 'event_type', 'event_cause']:
         'n_only_test': len(only_test),
     }
 
-# ── Target rate shift ──
-print(f"\n{'─'*50}")
+# -- Target rate shift --
+print(f"\n{'-'*50}")
 print("  Target Rate Comparison")
-print(f"{'─'*50}")
+print(f"{'-'*50}")
 train_rate = y[:split_idx].mean()
 test_rate  = y[split_idx:].mean()
 print(f"  Train target rate: {train_rate:.4f}  ({y[:split_idx].sum()}/{split_idx})")
 print(f"  Test  target rate: {test_rate:.4f}  ({y[split_idx:].sum()}/{len(df)-split_idx})")
-print(f"  Δ target rate:     {test_rate - train_rate:+.4f}")
+print(f"  Delta target rate: {test_rate - train_rate:+.4f}")
 d2_results['target_rate'] = {
     'train_rate': round(float(train_rate), 4),
     'test_rate': round(float(test_rate), 4),
     'delta': round(float(test_rate - train_rate), 4),
 }
 
-# ── Date range info ──
-print(f"\n{'─'*50}")
+# -- Date range info --
+print(f"\n{'-'*50}")
 print("  Date Range Info")
-print(f"{'─'*50}")
-print(f"  Train: {df_train['t'].min()} → {df_train['t'].max()}")
-print(f"  Test:  {df_test['t'].min()} → {df_test['t'].max()}")
+print(f"{'-'*50}")
+print(f"  Train: {df_train['t'].min()} -> {df_train['t'].max()}")
+print(f"  Test:  {df_test['t'].min()} -> {df_test['t'].max()}")
 d2_results['date_range'] = {
     'train_start': str(df_train['t'].min()),
     'train_end':   str(df_train['t'].max()),
@@ -307,7 +307,7 @@ d2_results['date_range'] = {
 # Save all results
 # ======================================================================
 results = {
-    'experiment': 'Phase 1 – Distribution Discovery',
+    'experiment': 'Phase 1 - Distribution Discovery',
     'dataset_size': len(df),
     'split_index': split_idx,
     'D1_adversarial_validation': d1_results,
