@@ -1,0 +1,98 @@
+{
+  "phase": "D - DR-TabPFN",
+  "genuine_dr_tabpfn": {
+    "feasible": false,
+    "blockers": [
+      "PyPI: no installable distribution for 'drift-tabpfn'",
+      "PyPI: no installable distribution for 'dr-tabpfn'",
+      "python: 'tabpfn_extensions' (hosts drift utilities) not importable"
+    ],
+    "note": "Real Drift-Resilient TabPFN (Helli et al. 2024) is a research fork + separate checkpoint, not pip-installable; not added to the frozen stack."
+  },
+  "proxy": {
+    "description": "Recency-context TabPFN: in-context training set biased to the most recent rows (all positives kept). A drift heuristic, NOT the published DR-TabPFN.",
+    "incumbent_7member": {
+      "per_fold": [
+        {
+          "fold": 0,
+          "n_val": 1021,
+          "pos_val": 88,
+          "roc_auc": 0.7599020754165449,
+          "pr_auc": 0.38856306531625917
+        },
+        {
+          "fold": 1,
+          "n_val": 1022,
+          "pos_val": 100,
+          "roc_auc": 0.7498373101952276,
+          "pr_auc": 0.2776890747745323
+        },
+        {
+          "fold": 2,
+          "n_val": 1022,
+          "pos_val": 91,
+          "roc_auc": 0.7951393397150647,
+          "pr_auc": 0.36286751689784474
+        },
+        {
+          "fold": 3,
+          "n_val": 1022,
+          "pos_val": 90,
+          "roc_auc": 0.8499046256556986,
+          "pr_auc": 0.42745768902298703
+        }
+      ],
+      "roc_auc_mean": 0.7886958377456339,
+      "roc_auc_std": 0.03913789834514333,
+      "pr_auc_mean": 0.36414433650290584,
+      "pr_auc_std": 0.05495679546929934
+    },
+    "candidate_8member": {
+      "per_fold": [
+        {
+          "fold": 0,
+          "n_val": 1021,
+          "pos_val": 88,
+          "roc_auc": 0.7630931501510279,
+          "pr_auc": 0.3968322939018279
+        },
+        {
+          "fold": 1,
+          "n_val": 1022,
+          "pos_val": 100,
+          "roc_auc": 0.7512472885032538,
+          "pr_auc": 0.27939733067687933
+        },
+        {
+          "fold": 2,
+          "n_val": 1022,
+          "pos_val": 91,
+          "roc_auc": 0.7991879227110161,
+          "pr_auc": 0.36673785428278044
+        },
+        {
+          "fold": 3,
+          "n_val": 1022,
+          "pos_val": 90,
+          "roc_auc": 0.849821173104435,
+          "pr_auc": 0.42810355114067744
+        }
+      ],
+      "roc_auc_mean": 0.7908373836174332,
+      "roc_auc_std": 0.038359930419607675,
+      "pr_auc_mean": 0.36776775750054125,
+      "pr_auc_std": 0.05544264673525461
+    },
+    "decision": {
+      "fold_wins": {
+        "7-member": 0,
+        "8-member": 4
+      },
+      "majority_fold_winner": "8-member",
+      "mean_pr_auc_margin": 0.003623420997635407,
+      "noise_band_std": 0.05544264673525461,
+      "robust_improvement_over_incumbent": false,
+      "verdict": "KEEP 7-member incumbent -- proxy gain within noise / not majority"
+    }
+  }
+}

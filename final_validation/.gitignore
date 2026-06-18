@@ -1,0 +1,15 @@
+# Regenerable build outputs -- not source. Recreate with the phase scripts.
+cache/
+__pycache__/
+catboost_info/
+
+# Heavy model binaries (ExtraTrees ~200MB, RandomForest ~64MB) exceed GitHub limits.
+# Regenerate with: python export_production_model.py
+artifacts/*.pkl
+artifacts/*.cbm
+artifacts/*.npz
+
+# Keep the small text artifacts tracked: manifest.json, metadata.json, thresholds.json
+!artifacts/manifest.json
+!artifacts/metadata.json
+!artifacts/thresholds.json

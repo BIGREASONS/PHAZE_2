@@ -1,0 +1,93 @@
+{
+  "phase": "C - temporal decay weighting",
+  "half_life_days": 64.0,
+  "decay_members": [
+    "CatBoost",
+    "LightGBM",
+    "XGBoost"
+  ],
+  "tuning": "none -- half-life locked a-priori at ~1/3 of span before any metric seen",
+  "incumbent": {
+    "per_fold": [
+      {
+        "fold": 0,
+        "n_val": 1021,
+        "pos_val": 88,
+        "roc_auc": 0.7599020754165449,
+        "pr_auc": 0.38856306531625917
+      },
+      {
+        "fold": 1,
+        "n_val": 1022,
+        "pos_val": 100,
+        "roc_auc": 0.7498373101952276,
+        "pr_auc": 0.2776890747745323
+      },
+      {
+        "fold": 2,
+        "n_val": 1022,
+        "pos_val": 91,
+        "roc_auc": 0.7951393397150647,
+        "pr_auc": 0.36286751689784474
+      },
+      {
+        "fold": 3,
+        "n_val": 1022,
+        "pos_val": 90,
+        "roc_auc": 0.8499046256556986,
+        "pr_auc": 0.42745768902298703
+      }
+    ],
+    "roc_auc_mean": 0.7886958377456339,
+    "roc_auc_std": 0.03913789834514333,
+    "pr_auc_mean": 0.36414433650290584,
+    "pr_auc_std": 0.05495679546929934
+  },
+  "decay_ensemble": {
+    "per_fold": [
+      {
+        "fold": 0,
+        "n_val": 1021,
+        "pos_val": 88,
+        "roc_auc": 0.7625085257721914,
+        "pr_auc": 0.3890460322353899
+      },
+      {
+        "fold": 1,
+        "n_val": 1022,
+        "pos_val": 100,
+        "roc_auc": 0.7501518438177874,
+        "pr_auc": 0.2809149433819229
+      },
+      {
+        "fold": 2,
+        "n_val": 1022,
+        "pos_val": 91,
+        "roc_auc": 0.792223887820021,
+        "pr_auc": 0.35648710796980054
+      },
+      {
+        "fold": 3,
+        "n_val": 1022,
+        "pos_val": 90,
+        "roc_auc": 0.8479732951835957,
+        "pr_auc": 0.43362640453562606
+      }
+    ],
+    "roc_auc_mean": 0.788214388148399,
+    "roc_auc_std": 0.03773841444431095,
+    "pr_auc_mean": 0.3650186220306849,
+    "pr_auc_std": 0.055746210086013395
+  },
+  "decision": {
+    "fold_wins": {
+      "incumbent": 1,
+      "decay": 3
+    },
+    "majority_fold_winner": "decay",
+    "mean_pr_auc_margin": 0.0008742855277790729,
+    "noise_band_std": 0.055746210086013395,
+    "robust_improvement_over_incumbent": false,
+    "verdict": "KEEP incumbent -- decay gain within noise / not majority"
+  }
+}

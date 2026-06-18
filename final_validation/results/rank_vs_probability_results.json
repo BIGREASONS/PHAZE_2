@@ -1,0 +1,96 @@
+{
+  "phase": "B - rank vs probability averaging",
+  "members": [
+    "CatBoost",
+    "LightGBM",
+    "XGBoost",
+    "RandomForest",
+    "ExtraTrees",
+    "Logistic",
+    "TabPFN"
+  ],
+  "prob_avg": {
+    "per_fold": [
+      {
+        "fold": 0,
+        "n_val": 1021,
+        "pos_val": 88,
+        "roc_auc": 0.7599020754165449,
+        "pr_auc": 0.38856306531625917
+      },
+      {
+        "fold": 1,
+        "n_val": 1022,
+        "pos_val": 100,
+        "roc_auc": 0.7498373101952276,
+        "pr_auc": 0.2776890747745323
+      },
+      {
+        "fold": 2,
+        "n_val": 1022,
+        "pos_val": 91,
+        "roc_auc": 0.7951393397150647,
+        "pr_auc": 0.36286751689784474
+      },
+      {
+        "fold": 3,
+        "n_val": 1022,
+        "pos_val": 90,
+        "roc_auc": 0.8499046256556986,
+        "pr_auc": 0.42745768902298703
+      }
+    ],
+    "roc_auc_mean": 0.7886958377456339,
+    "roc_auc_std": 0.03913789834514333,
+    "pr_auc_mean": 0.36414433650290584,
+    "pr_auc_std": 0.05495679546929934
+  },
+  "rank_avg": {
+    "per_fold": [
+      {
+        "fold": 0,
+        "n_val": 1021,
+        "pos_val": 88,
+        "roc_auc": 0.7683365000487186,
+        "pr_auc": 0.3826268693011544
+      },
+      {
+        "fold": 1,
+        "n_val": 1022,
+        "pos_val": 100,
+        "roc_auc": 0.7555802603036876,
+        "pr_auc": 0.2741844594226632
+      },
+      {
+        "fold": 2,
+        "n_val": 1022,
+        "pos_val": 91,
+        "roc_auc": 0.7919760153916975,
+        "pr_auc": 0.34331218651950113
+      },
+      {
+        "fold": 3,
+        "n_val": 1022,
+        "pos_val": 90,
+        "roc_auc": 0.8538984263233191,
+        "pr_auc": 0.4248713552029133
+      }
+    ],
+    "roc_auc_mean": 0.7924478005168556,
+    "roc_auc_std": 0.037805331386077896,
+    "pr_auc_mean": 0.35624871761155796,
+    "pr_auc_std": 0.05546794025683483
+  },
+  "decision": {
+    "fold_wins": {
+      "prob": 4,
+      "rank": 0
+    },
+    "majority_fold_winner": "prob",
+    "mean_pr_auc_winner": "prob",
+    "mean_pr_auc_margin": -0.007895618891347878,
+    "noise_band_std": 0.05546794025683483,
+    "robust_improvement_over_incumbent": false,
+    "verdict": "KEEP prob-avg (incumbent) -- rank-avg gain within noise / not majority"
+  }
+}

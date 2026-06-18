@@ -1,0 +1,44 @@
+{
+  "project": "ASTraM road-closure prediction",
+  "exported_choice": "incumbent",
+  "adopted_candidate": false,
+  "trained_on": "all rows (full dataset)",
+  "dataset": {
+    "n": 8173,
+    "pos": 676,
+    "pos_rate": 0.08271136669521595,
+    "date_min": "2023-09-29 23:38:19.342539+00:00",
+    "date_max": "2024-04-08 17:22:58.849385+00:00"
+  },
+  "incumbent_oof_pr_auc": 0.36414433650290584,
+  "incumbent_oof_pr_auc_std": 0.05495679546929934,
+  "feature_spec": {
+    "categoricals": [
+      "event_type",
+      "event_cause",
+      "veh_type",
+      "corridor",
+      "police_station",
+      "zone"
+    ],
+    "numerics": [
+      "lat",
+      "lon",
+      "hour",
+      "weekday"
+    ]
+  },
+  "validation": "rolling-origin expanding window, 4 folds, train-only encoders",
+  "git_commit": "14b386e4ad8c0f02215db5372478940df1070b11",
+  "package_versions": {
+    "python": "3.12.0",
+    "numpy": "2.2.3",
+    "pandas": "2.2.3",
+    "scikit-learn": "1.6.1",
+    "catboost": "1.2.10",
+    "lightgbm": "4.6.0",
+    "xgboost": "3.1.2",
+    "tabpfn": "2.0.9"
+  },
+  "exported_at_utc": "2026-06-18T05:58:40.011739+00:00"
+}

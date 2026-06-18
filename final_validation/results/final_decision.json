@@ -1,0 +1,43 @@
+{
+  "final_choice": "incumbent",
+  "adopt_candidate": false,
+  "detail": "Equal-weight 7-model probability-averaged ensemble (frozen).",
+  "incumbent_pr_auc": 0.36414433650290584,
+  "incumbent_pr_auc_std": 0.05495679546929934,
+  "candidates": [
+    {
+      "phase": "B",
+      "name": "Rank averaging",
+      "robust": false,
+      "margin": -0.007895618891347878
+    },
+    {
+      "phase": "C",
+      "name": "Temporal decay weighting",
+      "robust": false,
+      "margin": 0.0008742855277790729
+    },
+    {
+      "phase": "D",
+      "name": "DR-TabPFN proxy (8th member)",
+      "robust": false,
+      "margin": 0.003623420997635407
+    }
+  ],
+  "export": {
+    "ensemble": "equal-weight probability average",
+    "members": [
+      "CatBoost",
+      "LightGBM",
+      "XGBoost",
+      "RandomForest",
+      "ExtraTrees",
+      "Logistic",
+      "TabPFN"
+    ],
+    "combiner": "prob_mean",
+    "add_recency_tabpfn": false,
+    "use_rank_avg": false,
+    "use_temporal_decay": false
+  }
+}

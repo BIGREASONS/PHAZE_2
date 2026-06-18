@@ -1,0 +1,58 @@
+{
+  "ensemble": "equal-weight probability average",
+  "combiner": "prob_mean",
+  "members": [
+    "CatBoost",
+    "LightGBM",
+    "XGBoost",
+    "RandomForest",
+    "ExtraTrees",
+    "Logistic",
+    "TabPFN"
+  ],
+  "equal_weights": [
+    0.142857,
+    0.142857,
+    0.142857,
+    0.142857,
+    0.142857,
+    0.142857,
+    0.142857
+  ],
+  "temporal_decay": false,
+  "artifacts": {
+    "CatBoost": {
+      "file": "CatBoost.cbm",
+      "input": "raw_frame[cats+nums]"
+    },
+    "LightGBM": {
+      "file": "LightGBM.pkl",
+      "input": "ordinal_matrix"
+    },
+    "XGBoost": {
+      "file": "XGBoost.pkl",
+      "input": "ordinal_matrix"
+    },
+    "RandomForest": {
+      "file": "RandomForest.pkl",
+      "input": "ordinal_matrix"
+    },
+    "ExtraTrees": {
+      "file": "ExtraTrees.pkl",
+      "input": "ordinal_matrix"
+    },
+    "Logistic": {
+      "file": "Logistic.pkl",
+      "input": "raw_frame[cats+nums]"
+    },
+    "TabPFN": {
+      "file": "tabpfn_refit.npz",
+      "input": "ordinal_matrix",
+      "note": "in-context training set; refit TabPFNClassifier(cpu,n_estimators=3) at load"
+    }
+  },
+  "calibrator": "calibrator.pkl",
+  "encoder": "encoder.pkl",
+  "thresholds": "thresholds.json",
+  "inference_note": "Apply each member to its declared input; combine with the combiner; pass combined score through calibrator.pkl; threshold with thresholds.json."
+}
