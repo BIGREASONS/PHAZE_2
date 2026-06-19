@@ -1,6 +1,6 @@
 # GridSight AI Command Center
 
-**Real-time Traffic Incident Intelligence Platform for Bengaluru**
+**GridSight AI combines a rigorously validated road-closure prediction ensemble with MapmyIndia-powered geospatial intelligence and an operational command-center interface for traffic incident response.**
 
 Built for Flipkart Gridlock 2.0 — Bengaluru Traffic Police
 

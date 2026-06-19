@@ -33,7 +33,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="GridSight AI Command Center API",
     version="0.1.0",
-    description="Traffic Incident Intelligence — Backend Services",
+    description="GridSight AI combines a rigorously validated road-closure prediction ensemble with MapmyIndia-powered geospatial intelligence and an operational command-center interface for traffic incident response.",
     lifespan=lifespan,
 )
 
@@ -128,6 +128,17 @@ async def explain(req: PredictRequest):
 @app.get("/model-info")
 async def model_info():
     return model.get_model_metadata()
+
+
+from backend.services.mapmyindia import mapmyindia_service
+
+@app.get("/location/reverse-geocode")
+async def reverse_geocode(lat: float, lon: float):
+    return mapmyindia_service.reverse_geocode(lat, lon) or {}
+
+@app.get("/location/nearby")
+async def nearby_places(lat: float, lon: float, radius: int = 1000):
+    return {"places": mapmyindia_service.nearby_places(lat, lon, radius)}
 
 
 # ---------------------------------------------------------------------------

@@ -73,8 +73,8 @@ st.markdown("""
     <h1 style="color:#F3F2EE;font-size:2rem;font-weight:700;margin-bottom:8px;">
         GridSight AI Command Center
     </h1>
-    <p style="color:#7D857F;font-size:1rem;max-width:600px;margin:0 auto;">
-        Real-time Traffic Incident Intelligence Platform for Bengaluru
+    <p style="color:#7D857F;font-size:1rem;max-width:800px;margin:0 auto;line-height:1.5;">
+        GridSight AI combines a rigorously validated road-closure prediction ensemble with MapmyIndia-powered geospatial intelligence and an operational command-center interface for traffic incident response.
     </p>
     <div style="margin-top:32px;display:flex;justify-content:center;gap:16px;flex-wrap:wrap;">
         <div style="background:#121715;border:1px solid #232A28;border-radius:6px;

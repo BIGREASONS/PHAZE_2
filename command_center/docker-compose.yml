@@ -10,6 +10,7 @@ services:
       - "../Astram event data_anonymized - Astram event data_anonymizedb40ac87.csv:/data/astram.csv:ro"
     environment:
       - DATA_PATH=/data/astram.csv
+      - MAPMYINDIA_API_KEY=${MAPMYINDIA_API_KEY:-}
 
   frontend:
     build: 
@@ -22,5 +23,6 @@ services:
       - "../Astram event data_anonymized - Astram event data_anonymizedb40ac87.csv:/data/astram.csv:ro"
     environment:
       - DATA_PATH=/data/astram.csv
+      - MAPMYINDIA_API_KEY=${MAPMYINDIA_API_KEY:-}
     depends_on:
       - backend

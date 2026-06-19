@@ -15,6 +15,12 @@ _probe_*.py
 *feature_importance.csv
 test.ipynb
 Astram_Sample.csv
+.streamlit/
+
+# Caches
+__pycache__/
+*.pyc
+command_center/cache/
 
 # Large generated numpy arrays/pickles that are not part of final artifacts or tracked artifacts
 *.npy

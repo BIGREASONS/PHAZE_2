@@ -158,6 +158,30 @@ with right:
                 "weekday": row.get("weekday", 0),
             })
 
+            lat, lon = row.get("latitude", 0), row.get("longitude", 0)
+            location_str = f"Lat: {lat:.4f}, Lon: {lon:.4f}"
+            nearby_places = []
+            
+            try:
+                import requests
+                from backend.config import API_PORT, API_HOST
+                host = API_HOST if API_HOST != "0.0.0.0" else "127.0.0.1"
+                
+                # Fetch Reverse Geocode
+                loc_resp = requests.get(f"http://{host}:{API_PORT}/location/reverse-geocode?lat={lat}&lon={lon}", timeout=2.0)
+                if loc_resp.status_code == 200:
+                    loc_data = loc_resp.json()
+                    if loc_data and "formatted_address" in loc_data:
+                        location_str = loc_data["formatted_address"]
+                
+                # Fetch Nearby Places
+                nb_resp = requests.get(f"http://{host}:{API_PORT}/location/nearby?lat={lat}&lon={lon}", timeout=2.0)
+                if nb_resp.status_code == 200:
+                    nb_data = nb_resp.json()
+                    nearby_places = nb_data.get("places", [])
+            except Exception:
+                pass
+
             sev_color = {"LOW": JADE, "MEDIUM": "#B8833B", "HIGH": "#D08C4A", "CRITICAL": "#B04A4A"}
 
             st.markdown(f"""
@@ -169,6 +193,10 @@ with right:
                     {row.get('id','--')}
                 </div>
                 <div style="margin-top:12px;">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                        <span style="color:#7D857F;font-size:0.75rem;">Location</span>
+                        <span style="color:#B5B8B1;font-size:0.75rem;text-align:right;max-width:65%;">{location_str}</span>
+                    </div>
                     <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
                         <span style="color:#7D857F;font-size:0.75rem;">Type</span>
                         <span style="color:#B5B8B1;font-size:0.75rem;">{row.get('event_type','--')}</span>
@@ -208,6 +236,19 @@ with right:
                 </div>
             </div>
             """, unsafe_allow_html=True)
+            
+            if nearby_places:
+                places_list = "".join([f"<li style='margin-bottom:6px;'><span style='color:{JADE}'>&bull;</span> {p['name']}</li>" for p in nearby_places])
+                st.markdown(f"""
+                <div style="background:#121715;border:1px solid #232A28;border-radius:6px;padding:16px;margin-top:12px;">
+                    <div style="color:#7D857F;font-size:0.6rem;text-transform:uppercase;letter-spacing:0.08em;">
+                        Place Intelligence (MapmyIndia)
+                    </div>
+                    <ul style="color:#B5B8B1;font-size:0.8rem;margin-top:10px;padding-left:0;list-style-type:none;margin-left:0;">
+                        {places_list}
+                    </ul>
+                </div>
+                """, unsafe_allow_html=True)
     else:
         st.markdown(f"""
         <div style="background:#121715;border:1px solid #232A28;border-radius:6px;

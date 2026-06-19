@@ -20,6 +20,7 @@ API_HOST = os.getenv("API_HOST", "0.0.0.0")
 API_PORT = int(os.getenv("API_PORT", "8000"))
 STREAMLIT_PORT = int(os.getenv("STREAMLIT_PORT", "8501"))
 DEBUG = os.getenv("DEBUG", "false").lower() == "true"
+MAPMYINDIA_API_KEY = os.getenv("MAPMYINDIA_API_KEY", "")
 
 # ---------------------------------------------------------------------------
 # Model (placeholder until Claude provides the final model)

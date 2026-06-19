@@ -1,49 +1,45 @@
 # GridSight AI
-## Traffic Intelligence & Road Closure Prediction Platform
 
-GridSight AI is an operational traffic intelligence platform built on the ASTraM traffic incident dataset, combining machine learning, geospatial analytics, explainable AI, and command-center decision support.
-![Command Center Mockup](docs/assets/command_center_preview.png) *(Preview snippet)*
+**GridSight AI combines a rigorously validated road-closure prediction ensemble with MapmyIndia-powered geospatial intelligence and an operational command-center interface for traffic incident response.**
 
-## The Problem
-Given a reported traffic incident in Bengaluru, predict whether it **requires a road closure** at the time of reporting.
-The dataset is highly imbalanced (8.3% positive) and exhibits **severe temporal distribution shift**.
+Built for Flipkart Gridlock 2.0 — Bengaluru Traffic Police
 
-## Distribution Shift Discovered
-An adversarial classifier easily separates the early incidents (training data) from later incidents (test data) with an **AUC ≈ 0.87**.
-Because *where* and *when* incidents happen shifts drastically over time, standard random cross-validation heavily overestimates model performance. 
+## Overview
+GridSight AI is an end-to-end traffic incident intelligence platform. By combining a highly optimized machine learning ensemble with robust spatial visualization tools, the platform identifies high-risk corridors, predicts severe closures before they cascade, and enables operations teams to act preemptively.
 
-## Validation Strategy
-We implemented a **rolling-origin expanding-window CV** with 4 temporal folds. 
-To prevent data leakage, all categorical encoders and scalers are strictly fit on the training portion of each fold.
-Any model upgrade was subjected to a rigid adoption gate: it had to surpass the fold-to-fold standard deviation (noise band). Stacking meta-learners, rank averaging, and drift-aware TabPFN proxies were rigorously tested and **rejected** by this gate.
+## Features
+- **Traffic Incident Command Center**: Live monitoring of real-time incoming traffic anomalies.
+- **Ensemble Prediction Pipeline**: A frozen 7-model equal-weight probability ensemble (CatBoost, LightGBM, XGBoost, RandomForest, ExtraTrees, Logistic, TabPFN) predicting closure risks.
+- **Geospatial Intelligence**: MapmyIndia-powered location intelligence overlaid on performant PyDeck/CARTO rendering, featuring hotspot and corridor analysis.
+- **Explainability Center**: Real-time SHAP and single-feature ablation providing trust and transparency for every prediction.
 
-## Final Ensemble
-The accepted, frozen solution is an **equal-weight probability-averaged 7-model ensemble**:
-- CatBoost
-- LightGBM
-- XGBoost
-- RandomForest
-- ExtraTrees
-- Logistic Regression
-- TabPFN
+## Command Center UI
 
-The raw probability outputs are passed through an out-of-fold isotonic calibrator to yield true risk probabilities.
+![Executive Overview](docs/assets/executive_overview.png)
+![Incident Command Center](docs/assets/incident_command_center.png)
+![Incident Prediction](docs/assets/incident_prediction.png)
+![Explainability Center](docs/assets/explainability_center.png)
+![Geospatial Intelligence](docs/assets/geospatial_intelligence.png)
+![Model Monitoring](docs/assets/model_monitoring.png)
+![Competition Showcase](docs/assets/competition_showcase.png)
 
-## Command Center
-The system is deployed via a FastAPI backend and a Streamlit frontend ("GridSight AI Command Center").
-It serves real-time calibrated predictions alongside validated operating thresholds, mapping raw closure probabilities to actionable operational postures (LOW, MEDIUM, HIGH, CRITICAL). 
-Local explainability is handled via single-feature ablations against a dynamic dataset baseline.
+## Demo & Architecture
+- **Demo Video**: [docs/assets/demo_video.mp4](docs/assets/demo_video.mp4)
+- **Architecture Diagram**: ![Architecture Diagram](docs/assets/architecture_diagram.png)
 
-## Results
-Out-of-time (rolling-origin) performance:
-- **PR-AUC:** 0.3641 ± 0.0550 (~4.4× the 8.3% base rate)
-- **ROC-AUC:** 0.7887 ± 0.0391
-- **Max-F1 operating point:** F1 0.440 / Precision 0.468 / Recall 0.415
+## Quick Start (Docker)
+The easiest way to launch the entire stack is via Docker Compose:
+```bash
+cd command_center
 
-GridSight AI reaches the model ceiling for the given data under its severe temporal shift. The solution has been frozen, audited, and deployed.
+# Optional: Add your MapmyIndia Key for location enrichment
+export MAPMYINDIA_API_KEY="your-static-key-here"
 
-### Read More
-- [Technical Report](docs/TECHNICAL_REPORT.md)
-- [Portfolio Showcase](docs/PORTFOLIO_SHOWCASE.md)
-- [Reproducibility Guide](docs/REPRODUCIBILITY.md)
-- [Deployment Checklist](docs/DEPLOYMENT_CHECKLIST.md)
+docker-compose up --build
+```
+- **Dashboard**: http://localhost:8501
+- **API Docs**: http://localhost:8000/docs
+
+## Architecture
+See [ARCHITECTURE.md](ARCHITECTURE.md) for details on the ML and Engineering topology.
+See [RELEASE_NOTES_v1.0.md](RELEASE_NOTES_v1.0.md) for details on validation and the freezing criteria.
