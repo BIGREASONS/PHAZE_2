@@ -1,0 +1,28 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+env.bak/
+venv.bak/
+
+# Project specifics
+_probe_*.py
+*ablation_results.csv
+*feature_importance.csv
+test.ipynb
+Astram_Sample.csv
+
+# Large generated numpy arrays/pickles that are not part of final artifacts or tracked artifacts
+*.npy
+*.npz
+*.pkl
+*.cbm
+
+# Do not ignore the actual final artifact exports if they were tracked, but user stated heavy files were not tracked.
+# The artifacts dir has its own .gitignore in final_validation/artifacts/
+final_validation/cache/
+final_validation/results/*.npy

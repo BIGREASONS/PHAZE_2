@@ -189,7 +189,7 @@ class DataService:
         df = self._apply_filters(self.df, filters)
         cols = ["id", "latitude", "longitude", "event_type", "event_cause",
                 "corridor", "police_station", "requires_road_closure",
-                "status", "created_date", "address"]
+                "status", "created_date", "address", "hour"]
         available = [c for c in cols if c in df.columns]
         out = df[available].dropna(subset=["latitude", "longitude"]).copy()
         return out

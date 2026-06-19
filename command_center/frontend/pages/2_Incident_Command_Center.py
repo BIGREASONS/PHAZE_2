@@ -16,7 +16,7 @@ from frontend.components.maps import (
     create_operations_map, get_risk_color,
 )
 from backend.services.data_service import DataService
-from backend.services.model_adapter import PlaceholderModel
+from backend.services.model_adapter import get_model
 
 apply_theme()
 
@@ -31,7 +31,7 @@ def get_ds():
 
 ds = get_ds()
 df = ds.df
-model = PlaceholderModel()
+model = get_model()
 
 # ── Header ────────────────────────────────────────────────────────────────
 st.markdown(f"""

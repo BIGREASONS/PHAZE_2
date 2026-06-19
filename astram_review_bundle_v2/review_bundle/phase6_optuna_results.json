@@ -1,0 +1,46 @@
+{
+  "catboost": {
+    "best_params": {
+      "iterations": 953,
+      "depth": 7,
+      "learning_rate": 0.01788962811844971,
+      "l2_leaf_reg": 6.584470087056678,
+      "border_count": 200,
+      "bagging_temperature": 0.9717903687711732
+    },
+    "best_trial_ap": 0.406817,
+    "retrained_ap": 0.406817,
+    "retrained_roc_auc": 0.806814
+  },
+  "lightgbm": {
+    "best_params": {
+      "n_estimators": 715,
+      "num_leaves": 61,
+      "learning_rate": 0.016967011329447893,
+      "min_child_samples": 13,
+      "reg_alpha": 1.4394550196888094,
+      "reg_lambda": 0.6684394093856001,
+      "subsample": 0.7382349921341282,
+      "colsample_bytree": 0.6180537861007277
+    },
+    "best_trial_ap": 0.440334,
+    "retrained_ap": 0.440334,
+    "retrained_roc_auc": 0.8093
+  },
+  "xgboost": {
+    "best_params": {
+      "n_estimators": 672,
+      "max_depth": 9,
+      "learning_rate": 0.011758202244033062,
+      "min_child_weight": 1,
+      "gamma": 3.232359871164915,
+      "subsample": 0.8567444588855071,
+      "colsample_bytree": 0.7717561838172443,
+      "reg_alpha": 0.9234997135663932,
+      "reg_lambda": 0.34424909448450824
+    },
+    "best_trial_ap": 0.443796,
+    "retrained_ap": 0.443796,
+    "retrained_roc_auc": 0.813183
+  }
+}

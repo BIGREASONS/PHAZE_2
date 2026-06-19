@@ -25,11 +25,28 @@ def get_risk_color(prob: float) -> List[int]:
         return [176, 74, 74, 240]    # red
 
 
+def _positions(data: pd.DataFrame, extra: Optional[List[str]] = None) -> pd.DataFrame:
+    """JSON-safe frame for PyDeck.
+
+    PyDeck's ``to_json`` cannot serialize pandas ``Timestamp`` / numpy ``int64``
+    cells (they have no ``__dict__``), so we keep only float lon/lat plus any
+    explicitly requested passthrough columns (e.g. the RGBA ``color`` list).
+    """
+    out = pd.DataFrame({
+        "longitude": pd.to_numeric(data["longitude"], errors="coerce").astype(float),
+        "latitude": pd.to_numeric(data["latitude"], errors="coerce").astype(float),
+    })
+    for col in (extra or []):
+        if col in data.columns:
+            out[col] = list(data[col])
+    return out.dropna(subset=["longitude", "latitude"]).reset_index(drop=True)
+
+
 def create_incident_layer(data: pd.DataFrame, color_col: str = "color") -> pdk.Layer:
     """ScatterplotLayer coloured by risk."""
-    df = data.copy()
+    df = _positions(data, [color_col])
     if color_col not in df.columns:
-        df["color"] = [[46, 166, 111, 180]] * len(df)
+        df[color_col] = [[46, 166, 111, 180]] * len(df)
     return pdk.Layer(
         "ScatterplotLayer",
         data=df,
@@ -47,7 +64,7 @@ def create_heatmap_layer(data: pd.DataFrame) -> pdk.Layer:
     """HeatmapLayer for incident density."""
     return pdk.Layer(
         "HeatmapLayer",
-        data=data,
+        data=_positions(data),
         get_position=["longitude", "latitude"],
         get_weight=1,
         radiusPixels=40,
@@ -66,7 +83,7 @@ def create_cluster_layer(data: pd.DataFrame) -> pdk.Layer:
     """HexagonLayer for clustering."""
     return pdk.Layer(
         "HexagonLayer",
-        data=data,
+        data=_positions(data),
         get_position=["longitude", "latitude"],
         radius=300,
         elevation_scale=4,
@@ -85,9 +102,12 @@ def create_cluster_layer(data: pd.DataFrame) -> pdk.Layer:
 
 def create_station_layer(data: pd.DataFrame) -> pdk.Layer:
     """ScatterplotLayer sized by incident count per station."""
+    df = _positions(data, ["radius"])
+    if "radius" in df.columns:
+        df["radius"] = pd.to_numeric(df["radius"], errors="coerce").fillna(0).astype(float)
     return pdk.Layer(
         "ScatterplotLayer",
-        data=data,
+        data=df,
         get_position=["longitude", "latitude"],
         get_radius="radius",
         get_fill_color=[15, 118, 110, 160],

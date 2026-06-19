@@ -11,7 +11,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 import streamlit as st
 from frontend.components.theme import apply_theme, render_footer
-from backend.services.model_adapter import PlaceholderModel
+from backend.services.model_adapter import get_model
 from backend.services.data_service import DataService
 from frontend.components.ui import render_sidebar_health
 
@@ -29,7 +29,7 @@ apply_theme()
 
 # ── Init Session State ───────────────────────────────────────────────────
 if "model" not in st.session_state:
-    st.session_state.model = PlaceholderModel()
+    st.session_state.model = get_model()
     st.session_state.model.load_model()
 
 if "data_service" not in st.session_state:

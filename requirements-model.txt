@@ -1,0 +1,23 @@
+# ASTraM model-serving / reproduction stack.
+# Pinned to the export environment recorded in
+# final_validation/artifacts/metadata.json so the exported pickles load
+# without scikit-learn version warnings. Used to train, validate, export,
+# and SERVE the frozen 7-model ensemble.
+#
+# Install alongside command_center/requirements.txt (the dashboard stack).
+#   python -m pip install -r requirements-model.txt
+#
+# Requires Python 3.12.x.
+
+numpy==2.2.3
+pandas==2.2.3
+scikit-learn==1.6.1
+catboost==1.2.10
+lightgbm==4.6.0
+xgboost==3.1.2
+tabpfn==2.0.9
+joblib>=1.5.0
+
+# TabPFN runs on PyTorch. The CPU wheel is sufficient for correctness
+# (~4 min/prediction); install a CUDA build for interactive (GPU) latency.
+torch>=2.9.0

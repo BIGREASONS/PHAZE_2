@@ -10,7 +10,7 @@ st.set_page_config(page_title="ASTraM Command Center", page_icon="🚦", layout=
 from frontend.components.theme import apply_theme, render_footer
 from frontend.components.ui import render_section_header, render_status_badge
 from frontend.components.maps import create_incident_layer, create_operations_map, get_risk_color
-from backend.services.model_adapter import PlaceholderModel
+from backend.services.model_adapter import get_model
 from shared.constants import SCENARIOS, REPLAY_STATES
 import pandas as pd
 
@@ -20,7 +20,7 @@ CHAMP = "#D9C7A3"
 CHAMP_L = "#E7DBC2"
 BG2 = "#121715"
 
-model = PlaceholderModel()
+model = get_model()
 
 if "showcase_results" not in st.session_state:
     st.session_state.showcase_results = {}

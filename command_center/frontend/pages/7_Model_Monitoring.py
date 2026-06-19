@@ -11,7 +11,7 @@ import plotly.graph_objects as go
 
 from frontend.components.theme import apply_theme, render_footer
 from frontend.components.ui import render_section_header, render_kpi_row, render_metric_tile
-from backend.services.model_adapter import PlaceholderModel
+from backend.services.model_adapter import get_model, process_uptime_seconds
 from backend.services.data_service import DataService
 
 apply_theme()
@@ -22,9 +22,18 @@ BG = "#0A0D0C"
 BG2 = "#121715"
 TEXT = "#F3F2EE"
 
-model = PlaceholderModel()
+model = get_model()
 meta = model.get_model_metadata()
 metrics = meta.get("metrics", {})
+is_placeholder = "placeholder" in meta["name"].lower()
+
+
+def _fmt_uptime(seconds: float) -> str:
+    h, rem = divmod(int(max(0, seconds)), 3600)
+    return f"{h}h {rem // 60:02d}m" if h else f"{rem // 60}m"
+
+
+uptime_str = _fmt_uptime(process_uptime_seconds())
 
 # ── Header ────────────────────────────────────────────────────────────────
 st.markdown(f"""
@@ -47,13 +56,18 @@ render_kpi_row([
 ], accent=SILVER)
 
 # ── Performance Metrics ──────────────────────────────────────────────────
-render_section_header("Performance Metrics", subtitle="Placeholder values", accent=SILVER)
-st.markdown("""
-<div style="color:#B8833B;font-size:0.7rem;background:#121715;border:1px solid #232A28;
-    border-radius:4px;padding:6px 10px;margin-bottom:12px;">
-    Placeholder — metrics will update automatically when final model is deployed
-</div>
-""", unsafe_allow_html=True)
+render_section_header(
+    "Performance Metrics",
+    subtitle="Placeholder values" if is_placeholder else "Rolling-origin out-of-fold (honest)",
+    accent=SILVER,
+)
+if is_placeholder:
+    st.markdown("""
+    <div style="color:#B8833B;font-size:0.7rem;background:#121715;border:1px solid #232A28;
+        border-radius:4px;padding:6px 10px;margin-bottom:12px;">
+        Placeholder — production artifacts not loaded; values shown are the frozen ensemble's reference metrics
+    </div>
+    """, unsafe_allow_html=True)
 
 mc = st.columns(5)
 metric_items = [
@@ -98,8 +112,9 @@ ds = st.session_state.data_service
 
 rows_loaded = len(ds.df)
 features_available = len(ds.df.columns)
-api_status = "Connected"
-model_adapter_status = "Connected"
+backend_state = "Healthy" if not is_placeholder else "Fallback"
+backend_color = "#2EA66F" if not is_placeholder else "#B8833B"
+model_state = meta.get("status", "Unknown")
 
 st.markdown(f"""
 <div style="display:flex;gap:20px;flex-wrap:wrap;">
@@ -126,15 +141,15 @@ st.markdown(f"""
         </div>
         <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
             <span style="color:#B5B8B1;font-size:0.8rem;">Backend Status</span>
-            <span style="color:#2EA66F;font-size:0.8rem;">Healthy</span>
+            <span style="color:{backend_color};font-size:0.8rem;">{backend_state}</span>
         </div>
         <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
             <span style="color:#B5B8B1;font-size:0.8rem;">Model Interface</span>
-            <span style="color:#2EA66F;font-size:0.8rem;">{model_adapter_status}</span>
+            <span style="color:#2EA66F;font-size:0.8rem;">{model_state}</span>
         </div>
         <div style="display:flex;justify-content:space-between;">
             <span style="color:#B5B8B1;font-size:0.8rem;">Uptime</span>
-            <span style="color:#F3F2EE;font-size:0.8rem;">2h 14m</span>
+            <span style="color:#F3F2EE;font-size:0.8rem;">{uptime_str}</span>
         </div>
     </div>
 </div>

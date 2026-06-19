@@ -1,0 +1,12 @@
+{
+  "planned_rows": 8173,
+  "unplanned_rows": 0,
+  "unified": {
+    "roc_auc": 0.806001,
+    "pr_auc": 0.395037
+  },
+  "regime_split": {
+    "roc_auc": 0.806001,
+    "pr_auc": 0.395037
+  }
+}

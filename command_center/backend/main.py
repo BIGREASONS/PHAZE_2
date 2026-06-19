@@ -10,14 +10,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from backend.services.data_service import DataService
-from backend.services.model_adapter import PlaceholderModel, ModelInterface
+from backend.services.model_adapter import ModelInterface, get_model
 from backend.config import API_HOST, API_PORT
 
 # ---------------------------------------------------------------------------
 # Globals
 # ---------------------------------------------------------------------------
 data_service = DataService()
-model: ModelInterface = PlaceholderModel()
+model: ModelInterface = get_model()
 
 
 # ---------------------------------------------------------------------------
@@ -146,7 +146,7 @@ async def stream_incidents(ws: WebSocket):
                 "active_incidents": len(data_service.df),
                 "high_risk_incidents": int(data_service.df["requires_road_closure"].sum()),
                 "system_health": "healthy",
-                "model_status": "placeholder",
+                "model_status": model.get_model_metadata().get("status", "unknown").lower(),
                 "data_freshness": "loaded"
             })
     except WebSocketDisconnect:

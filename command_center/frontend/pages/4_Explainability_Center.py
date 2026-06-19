@@ -11,7 +11,7 @@ import plotly.graph_objects as go
 from frontend.components.theme import apply_theme, render_footer
 from frontend.components.ui import render_section_header, render_kpi_row
 from backend.services.data_service import DataService
-from backend.services.model_adapter import PlaceholderModel
+from backend.services.model_adapter import get_model
 
 apply_theme()
 
@@ -29,7 +29,8 @@ def get_ds():
 
 ds = get_ds()
 df = ds.df
-model = PlaceholderModel()
+model = get_model()
+is_placeholder = "placeholder" in model.get_model_metadata()["name"].lower()
 
 # ── Header ────────────────────────────────────────────────────────────────
 st.markdown(f"""
@@ -40,16 +41,25 @@ st.markdown(f"""
 <p style="color:#7D857F;font-size:0.8rem;margin-bottom:4px;">
     Model interpretability and feature analysis
 </p>
+""", unsafe_allow_html=True)
+
+_explain_note = (
+    "Fallback model active — values below are illustrative until production artifacts load"
+    if is_placeholder else
+    "Global importances from the frozen ensemble's tree members; local attribution by "
+    "single-feature ablation over the full 7-model calibrated ensemble"
+)
+st.markdown(f"""
 <div style="color:{COPPER};font-size:0.7rem;background:#121715;border:1px solid #232A28;
     border-radius:4px;padding:8px 12px;margin-bottom:20px;">
-    Placeholder — All visualisations below use mock data and will be replaced by real SHAP values after final model selection
+    {_explain_note}
 </div>
 """, unsafe_allow_html=True)
 
 # ── Global Feature Importance ─────────────────────────────────────────────
 render_section_header("Global Feature Importance", accent=COPPER)
 
-importances = model.GLOBAL_IMPORTANCES
+importances = model.get_global_importances()
 sorted_imp = sorted(importances.items(), key=lambda x: x[1])
 fig = go.Figure(go.Bar(
     y=[i[0] for i in sorted_imp],
@@ -132,7 +142,7 @@ if selected_id:
             """, unsafe_allow_html=True)
 
 # ── Confidence Distribution ───────────────────────────────────────────────
-render_section_header("Confidence Distribution", accent=COPPER)
+render_section_header("Confidence Distribution", subtitle="Illustrative distribution", accent=COPPER)
 fig = go.Figure(go.Pie(
     labels=["High", "Medium", "Low", "Very Low"],
     values=[45, 30, 20, 5],

@@ -1,0 +1,16 @@
+[WITH_zone      temporal] n=6810 MEAN6 ROC=0.764 PR=0.3126 CatBoost PR=0.3182 (99.0s)
+[WITH_zone      corridor] n=8173 MEAN6 ROC=0.7385 PR=0.3222 CatBoost PR=0.285 (94.2s)
+[NO_zone        temporal] n=6810 MEAN6 ROC=0.7624 PR=0.3081 CatBoost PR=0.3084 (80.2s)
+[NO_zone        corridor] n=8173 MEAN6 ROC=0.739 PR=0.3132 CatBoost PR=0.2615 (97.3s)
+[NO_zone_latlon temporal] n=6810 MEAN6 ROC=0.7549 PR=0.3004 CatBoost PR=0.3023 (91.8s)
+[NO_zone_latlon corridor] n=8173 MEAN6 ROC=0.7345 PR=0.3194 CatBoost PR=0.2581 (97.0s)
+
+================ SUMMARY: MEAN-of-6 trainable models ================
+scheme    |        WITH zone |          NO zone |   NO zone+latlon
+          |     ROC       PR |     ROC       PR |     ROC       PR
+temporal  |  0.7640   0.3126 |  0.7624   0.3081 |  0.7549   0.3004
+corridor  |  0.7385   0.3222 |  0.7390   0.3132 |  0.7345   0.3194
+
+================ SUMMARY: CatBoost (key single) ================
+temporal  | WITH [np.float64(0.7562), np.float64(0.3182)] | NO_zone [np.float64(0.7521), np.float64(0.3084)] | NO_zone_latlon [np.float64(0.7438), np.float64(0.3023)]
+corridor  | WITH [np.float64(0.7228), np.float64(0.285)] | NO_zone [np.float64(0.7218), np.float64(0.2615)] | NO_zone_latlon [np.float64(0.6776), np.float64(0.2581)]

@@ -13,7 +13,7 @@ from datetime import datetime, date, time
 from frontend.components.theme import apply_theme, render_footer
 from frontend.components.ui import render_section_header, render_status_badge
 from backend.services.data_service import DataService
-from backend.services.model_adapter import PlaceholderModel
+from backend.services.model_adapter import get_model
 
 apply_theme()
 
@@ -31,7 +31,8 @@ def get_ds():
 
 ds = get_ds()
 df = ds.df
-model = PlaceholderModel()
+model = get_model()
+is_placeholder = "placeholder" in model.get_model_metadata()["name"].lower()
 
 if "prediction_history" not in st.session_state:
     st.session_state.prediction_history = []
@@ -148,10 +149,15 @@ if predict_clicked:
     )
     st.plotly_chart(fig, use_container_width=True)
 
+    _contrib_note = (
+        "Fallback model active — illustrative contributions until production artifacts load"
+        if is_placeholder else
+        "Contributions via single-feature ablation over the full 7-model calibrated ensemble"
+    )
     st.markdown(f"""
     <div style="color:#7D857F;font-size:0.7rem;padding:8px;background:{BG2};
         border:1px solid #232A28;border-radius:4px;margin-top:8px;">
-        Placeholder — Feature contributions will be replaced by real SHAP values after final model selection
+        {_contrib_note}
     </div>
     """, unsafe_allow_html=True)
 

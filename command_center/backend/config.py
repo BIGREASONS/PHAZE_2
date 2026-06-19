@@ -9,7 +9,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_PATH = os.getenv(
     "DATA_PATH",
-    str(BASE_DIR.parent / "astram_review_bundle_v2" / "review_bundle"
+    str(BASE_DIR.parent
         / "Astram event data_anonymized - Astram event data_anonymizedb40ac87.csv"),
 )
 
