@@ -1,1 +1,1 @@
-# ASTraM Command Center — Frontend Package
+# GridSight AI Command Center — Frontend Package

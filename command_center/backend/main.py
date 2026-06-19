@@ -1,4 +1,4 @@
-"""ASTraM Command Center — FastAPI Backend."""
+"""GridSight AI Command Center — FastAPI Backend."""
 
 from __future__ import annotations
 from contextlib import asynccontextmanager
@@ -31,7 +31,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="ASTraM Command Center API",
+    title="GridSight AI Command Center API",
     version="0.1.0",
     description="Traffic Incident Intelligence — Backend Services",
     lifespan=lifespan,

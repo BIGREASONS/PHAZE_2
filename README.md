@@ -1,7 +1,7 @@
-# ASTraM: Shift-Aware Road-Closure Prediction
+# GridSight AI
+## Traffic Intelligence & Road Closure Prediction Platform
 
-ASTraM is an end-to-end, rigorously validated machine learning pipeline and interactive Command Center for predicting traffic incident road closures. 
-
+GridSight AI is an operational traffic intelligence platform built on the ASTraM traffic incident dataset, combining machine learning, geospatial analytics, explainable AI, and command-center decision support.
 ![Command Center Mockup](docs/assets/command_center_preview.png) *(Preview snippet)*
 
 ## The Problem
@@ -30,7 +30,7 @@ The accepted, frozen solution is an **equal-weight probability-averaged 7-model 
 The raw probability outputs are passed through an out-of-fold isotonic calibrator to yield true risk probabilities.
 
 ## Command Center
-The system is deployed via a FastAPI backend and a Streamlit frontend ("ASTraM Command Center"). 
+The system is deployed via a FastAPI backend and a Streamlit frontend ("GridSight AI Command Center").
 It serves real-time calibrated predictions alongside validated operating thresholds, mapping raw closure probabilities to actionable operational postures (LOW, MEDIUM, HIGH, CRITICAL). 
 Local explainability is handled via single-feature ablations against a dynamic dataset baseline.
 
@@ -40,7 +40,7 @@ Out-of-time (rolling-origin) performance:
 - **ROC-AUC:** 0.7887 ± 0.0391
 - **Max-F1 operating point:** F1 0.440 / Precision 0.468 / Recall 0.415
 
-ASTraM reaches the model ceiling for the given data under its severe temporal shift. The solution has been frozen, audited, and deployed.
+GridSight AI reaches the model ceiling for the given data under its severe temporal shift. The solution has been frozen, audited, and deployed.
 
 ### Read More
 - [Technical Report](docs/TECHNICAL_REPORT.md)

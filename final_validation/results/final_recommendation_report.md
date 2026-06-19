@@ -1,4 +1,4 @@
-# ASTraM — Final Recommendation Report
+# GridSight AI — Final Recommendation Report
 
 _Last-chance-before-freeze validation. Rolling-origin expanding-window CV; all base learners refit per fold on train rows only (no future leakage); every candidate uses the identical folds and members as the incumbent._
 

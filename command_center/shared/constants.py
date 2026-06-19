@@ -1,4 +1,4 @@
-"""ASTraM Command Center — Shared Constants."""
+"""GridSight AI Command Center — Shared Constants."""
 
 from pathlib import Path
 import os

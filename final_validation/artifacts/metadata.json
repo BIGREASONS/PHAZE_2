@@ -1,5 +1,5 @@
 {
-  "project": "ASTraM road-closure prediction",
+  "project": "GridSight AI road-closure prediction",
   "exported_choice": "incumbent",
   "adopted_candidate": false,
   "trained_on": "all rows (full dataset)",

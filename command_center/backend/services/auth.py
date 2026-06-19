@@ -1,4 +1,4 @@
-"""ASTraM Command Center — Lightweight Role-Based Auth."""
+"""GridSight AI Command Center — Lightweight Role-Based Auth."""
 
 from __future__ import annotations
 from dataclasses import dataclass

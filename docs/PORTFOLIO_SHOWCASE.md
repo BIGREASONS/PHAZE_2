@@ -1,4 +1,4 @@
-# ASTraM — Shift-Aware Road-Closure Prediction & Command Center
+# GridSight AI — Shift-Aware Road-Closure Prediction & Command Center
 
 > A traffic-incident ML system that knows the difference between a real improvement and
 > noise — and ships the part that survives.

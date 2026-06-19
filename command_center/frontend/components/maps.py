@@ -1,4 +1,4 @@
-"""ASTraM Command Center — PyDeck Map Layers.
+"""GridSight AI Command Center — PyDeck Map Layers.
 
 All map rendering uses PyDeck with CARTO Dark Matter basemap.
 No Folium. No Mapbox API key required.

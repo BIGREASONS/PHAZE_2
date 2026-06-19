@@ -1,5 +1,5 @@
 """
-Distribution-shift stress test for the ASTraM road-closure stack.
+Distribution-shift stress test for the GridSight AI road-closure stack.
 
 Honest design (the whole point of the exercise):
   * Base-model OOF is generated INSIDE each CV scheme. A random-CV OOF re-split by

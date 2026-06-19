@@ -1,1 +1,1 @@
-# ASTraM Command Center — Pages Package
+# GridSight AI Command Center — Pages Package

@@ -1,4 +1,4 @@
-"""ASTraM Command Center — Streamlit Entrypoint.
+"""GridSight AI Command Center — Streamlit Entrypoint.
 
 Multi-page app with dark Palantir-grade theme.
 """
@@ -18,7 +18,7 @@ from frontend.components.ui import render_sidebar_health
 
 # ── Page Config ───────────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="ASTraM Command Center",
+    page_title="GridSight AI Command Center",
     page_icon="🚦",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -44,7 +44,7 @@ st.sidebar.markdown("""
 <div style="padding:8px 0 16px 0;">
     <div style="color:#F3F2EE;font-size:1.15rem;font-weight:700;
         font-family:'Inter Tight',sans-serif;letter-spacing:-0.02em;">
-        🚦 ASTraM
+        🚦 GridSight AI
     </div>
     <div style="color:#7D857F;font-size:0.7rem;font-family:'Inter',sans-serif;margin-top:2px;">
         Traffic Incident Command Center
@@ -71,7 +71,7 @@ st.markdown("""
 <div style="text-align:center;padding:80px 0 40px 0;">
     <div style="font-size:3rem;margin-bottom:8px;">🚦</div>
     <h1 style="color:#F3F2EE;font-size:2rem;font-weight:700;margin-bottom:8px;">
-        ASTraM Command Center
+        GridSight AI Command Center
     </h1>
     <p style="color:#7D857F;font-size:1rem;max-width:600px;margin:0 auto;">
         Real-time Traffic Incident Intelligence Platform for Bengaluru

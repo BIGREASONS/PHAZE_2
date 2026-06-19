@@ -5,7 +5,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
 import streamlit as st
 
-st.set_page_config(page_title="ASTraM Command Center", page_icon="🚦", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="GridSight AI Command Center", page_icon="🚦", layout="wide", initial_sidebar_state="expanded")
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
@@ -142,7 +142,7 @@ with c3:
     st.download_button(
         "📄 Analytics Snapshot PDF",
         generate_executive_pdf(analytics, title="Analytics Snapshot Report"),
-        f"ASTraM_Analytics_{pd.Timestamp.now().strftime('%Y%m%d')}.pdf",
+        f"GridSight_AI_Analytics_{pd.Timestamp.now().strftime('%Y%m%d')}.pdf",
         "application/pdf",
         use_container_width=True
     )

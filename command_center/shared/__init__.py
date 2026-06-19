@@ -1,1 +1,1 @@
-# ASTraM Command Center — Shared Package
+# GridSight AI Command Center — Shared Package

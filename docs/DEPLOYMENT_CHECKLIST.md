@@ -1,4 +1,4 @@
-# ASTraM — Production Deployment Checklist
+# GridSight AI — Production Deployment Checklist
 
 **Model:** Frozen equal-weight 7-model probability-averaged ensemble (incumbent).
 **Status:** FROZEN — validation gate complete, no further model changes.
@@ -191,7 +191,7 @@ curl -s localhost:8000/health
 curl -s localhost:8000/model-info
 ```
 Expect:
-- `"name": "ASTraM 7-Model Equal-Weight Ensemble"`  ← real model
+- `"name": "GridSight AI 7-Model Equal-Weight Ensemble"`  ← real model
 - `"status": "ONLINE"`
 - `"members": ["CatBoost","LightGBM","XGBoost","RandomForest","ExtraTrees","Logistic","TabPFN"]`
 - `"metrics": {"roc_auc":0.7887,"pr_auc":0.3641,...}`
@@ -250,7 +250,7 @@ PY
 - [ ] `metadata.json` package versions match the serving environment (§2a)
 - [ ] `command_center/requirements.txt` `fpdf2` line repaired (§2b)
 - [ ] Backend starts; `/health` → `model_loaded: true` (§5a)
-- [ ] `/model-info` → name = **ASTraM 7-Model Equal-Weight Ensemble**, status **ONLINE** (§5b)
+- [ ] `/model-info` → name = **GridSight AI 7-Model Equal-Weight Ensemble**, status **ONLINE** (§5b)
 - [ ] Smoke `/predict` returns a valid schema (§5c) — operator briefed on ~4 min CPU latency
 - [ ] RAM ≥ 2 GB/process provisioned (§4); GPU decision made for interactive use
 - [ ] Decision recorded: serve real model (default) **or** `ASTRAM_USE_PLACEHOLDER=1` (demo only)

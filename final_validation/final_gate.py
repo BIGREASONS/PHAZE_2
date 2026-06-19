@@ -99,7 +99,7 @@ def main():
 
     # ---- markdown report
     md = []
-    md.append("# ASTraM — Final Recommendation Report")
+    md.append("# GridSight AI — Final Recommendation Report")
     md.append("")
     md.append("_Last-chance-before-freeze validation. Rolling-origin expanding-window CV; "
               "all base learners refit per fold on train rows only (no future leakage); "

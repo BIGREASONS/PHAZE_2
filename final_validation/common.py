@@ -1,7 +1,7 @@
 """
 final_validation/common.py
 ==========================
-Shared foundation for the ASTraM "last chance before freeze" validation.
+Shared foundation for the GridSight AI "last chance before freeze" validation.
 
 Design contract (read before touching anything):
 

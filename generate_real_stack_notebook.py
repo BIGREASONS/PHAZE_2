@@ -3,7 +3,7 @@ import nbformat as nbf
 nb = nbf.v4.new_notebook()
 
 nb.cells = [
-    nbf.v4.new_markdown_cell("# Stacking Under Distribution Shift\n## ASTraM Traffic Incident Prediction\nThis notebook evaluates whether model stacking (and specifically TabPFN's contribution) survives strict distribution shifts via Temporal CV and GroupKFold (by corridor).\n\n**Note:** This notebook relies entirely on pre-computed Out-of-Fold (OOF) predictions to guarantee honesty. No synthetic fallback data is used."),
+    nbf.v4.new_markdown_cell("# Stacking Under Distribution Shift\n## GridSight AI Traffic Incident Prediction\nThis notebook evaluates whether model stacking (and specifically TabPFN's contribution) survives strict distribution shifts via Temporal CV and GroupKFold (by corridor).\n\n**Note:** This notebook relies entirely on pre-computed Out-of-Fold (OOF) predictions to guarantee honesty. No synthetic fallback data is used."),
     
     nbf.v4.new_code_cell("""import os
 import sys

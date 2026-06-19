@@ -1,4 +1,4 @@
-# final_validation/ — ASTraM last-chance-before-freeze validation
+# final_validation/ — GridSight AI last-chance-before-freeze validation
 
 Isolated, end-to-end harness that ruthlessly tests the three surviving audit ideas
 against the frozen incumbent under **honest rolling-origin temporal CV**, then exports

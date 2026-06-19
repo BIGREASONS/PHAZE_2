@@ -1,4 +1,4 @@
-"""ASTraM Command Center — Theme Engine.
+"""GridSight AI Command Center — Theme Engine.
 
 Injects the full Palantir-grade dark design system into Streamlit via CSS.
 NO glow. NO neon. NO glassmorphism. Industrial, restrained, executive.
@@ -243,7 +243,7 @@ def render_footer():
         display: flex; justify-content: space-between; align-items: center;
     ">
         <span style="color: #7D857F; font-size: 0.7rem; font-family: 'Inter', sans-serif;">
-            ASTraM Command Center &nbsp;|&nbsp; Flipkart Gridlock 2.0 &nbsp;|&nbsp; Built for Traffic Intelligence
+            GridSight AI Command Center &nbsp;|&nbsp; Flipkart Gridlock 2.0 &nbsp;|&nbsp; Built for Traffic Intelligence
         </span>
         <span style="color: #7D857F; font-size: 0.7rem; font-family: 'JetBrains Mono', monospace;">
             v0.1.0

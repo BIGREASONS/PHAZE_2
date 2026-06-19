@@ -226,7 +226,7 @@ def main():
 
     info = C.base_rate_info()
     metadata = {
-        "project": "ASTraM road-closure prediction",
+        "project": "GridSight AI road-closure prediction",
         "exported_choice": decision["final_choice"],
         "adopted_candidate": decision["adopt_candidate"],
         "trained_on": "all rows (full dataset)",

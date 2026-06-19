@@ -1,4 +1,4 @@
-"""ASTraM Command Center — Global Filter System.
+"""GridSight AI Command Center — Global Filter System.
 
 Renders multi-select filters in the sidebar or inline.
 Filter state persists in st.session_state across pages.

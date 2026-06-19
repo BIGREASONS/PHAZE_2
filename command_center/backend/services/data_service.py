@@ -1,4 +1,4 @@
-"""ASTraM Command Center — Data Service.
+"""GridSight AI Command Center — Data Service.
 
 Loads the ASTraM dataset, caches it, and exposes filtering / aggregation /
 analytics methods consumed by both the FastAPI backend and the Streamlit

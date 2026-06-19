@@ -1,4 +1,4 @@
-# ASTraM — Reproducibility Guide
+# GridSight AI — Reproducibility Guide
 
 End-to-end, copy-pasteable. A new user can go from a clean machine to a running Command
 Center serving the frozen ensemble, **reproducing the validation numbers along the way**,
@@ -165,7 +165,7 @@ p = m.predict({"event_type":"unplanned","event_cause":"accident","veh_type":"car
                "latitude":12.9716,"longitude":77.5946,"hour":18,"weekday":2})
 assert {"probability","severity","confidence","recommended_action","feature_contributions"} <= set(p)
 md = m.get_model_metadata()
-assert md["name"] == "ASTraM 7-Model Equal-Weight Ensemble"
+assert md["name"] == "GridSight AI 7-Model Equal-Weight Ensemble"
 print("OK ·", md["name"], "· P(closure)=", p["probability"], "· severity=", p["severity"])
 PY
 ```
@@ -192,7 +192,7 @@ streamlit run frontend/app.py --server.port 8501
 **Confirm the real model is live (not the fallback):**
 ```bash
 curl -s localhost:8000/model-info | python -m json.tool
-# "name": "ASTraM 7-Model Equal-Weight Ensemble", "status": "ONLINE", 7 members
+# "name": "GridSight AI 7-Model Equal-Weight Ensemble", "status": "ONLINE", 7 members
 ```
 If it says `PlaceholderModel`, the artifacts or ML deps are missing — re-check steps 2–4
 and read the backend log line `ProductionEnsembleModel unavailable (<reason>)`.

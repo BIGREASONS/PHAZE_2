@@ -1,4 +1,4 @@
-"""ASTraM Command Center — Reusable UI Components.
+"""GridSight AI Command Center — Reusable UI Components.
 
 Bento-style KPI cards, leaderboard tables, status badges, section headers.
 All rendered via st.markdown with inline CSS — no external stylesheets.

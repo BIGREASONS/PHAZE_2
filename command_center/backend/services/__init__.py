@@ -1,1 +1,1 @@
-# ASTraM Command Center — Backend Services Package
+# GridSight AI Command Center — Backend Services Package

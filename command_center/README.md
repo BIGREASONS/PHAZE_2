@@ -1,4 +1,4 @@
-# ASTraM Command Center
+# GridSight AI Command Center
 
 **Real-time Traffic Incident Intelligence Platform for Bengaluru**
 

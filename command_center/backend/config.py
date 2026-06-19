@@ -1,4 +1,4 @@
-"""ASTraM Command Center — Application Configuration."""
+"""GridSight AI Command Center — Application Configuration."""
 
 import os
 from pathlib import Path

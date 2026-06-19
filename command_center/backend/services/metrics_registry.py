@@ -1,4 +1,4 @@
-"""ASTraM Command Center — Metrics Registry.
+"""GridSight AI Command Center — Metrics Registry.
 
 Every KPI surfaced anywhere in the platform originates from this registry.
 Future models can register additional KPIs without editing any page code.

@@ -84,6 +84,6 @@ Before generating code, estimate runtime on:
    * Optimize for a T4 GPU.
 3. Never default to cloud unless local runtime exceeds 30 minutes.
 
-### ASTraM Project Specifics
+### GridSight AI Project Specifics
 **Run Local:** Leakage audit, Dataset profiling, CatBoost/LightGBM baselines, H3 generation, OSMnx experiments, Retrieval prototype.
 **Push to Kaggle:** multilingual-e5, BGE-M3, AutoGluon, large ablation studies, ensemble generation.

@@ -1,8 +1,8 @@
-# ASTraM: Shift-Aware Road-Closure Prediction under Severe Temporal Distribution Shift
+# GridSight AI: Shift-Aware Road-Closure Prediction under Severe Temporal Distribution Shift
 
 **A technical report on the modelling, validation, and freeze decision.**
 
-Bengaluru Traffic Police · Flipkart Gridlock 2.0 · ASTraM road-closure prediction.
+Bengaluru Traffic Police · Flipkart Gridlock 2.0 · GridSight AI road-closure prediction.
 
 ---
 
@@ -33,7 +33,7 @@ calibration and honest operating thresholds derived from out-of-fold predictions
 ## 1. Problem statement
 
 - **Task.** Binary classification: does an incident require a road closure?
-- **Operational use.** Feed a real-time incident command dashboard (the "ASTraM Command
+- **Operational use.** Feed a real-time incident command dashboard (the "GridSight AI Command
   Center") so dispatchers can triage closures, pre-stage diversions, and prioritise
   response. Predictions must be **calibrated** (a "30 % closure risk" should mean 30 %)
   and accompanied by **operating thresholds** for different recall postures.

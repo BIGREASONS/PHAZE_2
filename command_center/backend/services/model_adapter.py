@@ -1,4 +1,4 @@
-"""ASTraM Command Center — Model Adapter Layer.
+"""GridSight AI Command Center — Model Adapter Layer.
 
 Defines the generic ModelInterface that ALL pages consume.
 ProductionEnsembleModel is the served default; PlaceholderModel is a
@@ -545,7 +545,7 @@ class ProductionEnsembleModel(ModelInterface):
         mf1 = self.thresholds.get("max_f1", {})
         commit = (md.get("git_commit") or "")[:8]
         return {
-            "name": "ASTraM 7-Model Equal-Weight Ensemble",
+            "name": "GridSight AI 7-Model Equal-Weight Ensemble",
             "version": f"1.0.0-frozen ({commit})" if commit else "1.0.0-frozen",
             "training_date": (md.get("exported_at_utc", "") or "")[:10],
             "status": "ONLINE",
