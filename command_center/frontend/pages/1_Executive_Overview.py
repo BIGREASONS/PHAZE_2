@@ -64,20 +64,30 @@ st.markdown(f"""
 if st.download_button(
     label="📄 Generate Executive Brief",
     data=generate_executive_pdf(analytics),
-    file_name=f"GridSight_AI_Executive_Brief_{pd.Timestamp.now().strftime('%Y%m%d')}.pdf",
+    file_name=f"GridSight_AI_Executive_Brief_{pd.Timestamp.now().strftime('%d%m%Y')}.pdf",
     mime="application/pdf"
 ):
     pass
 st.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
 
 # ── KPI Row ───────────────────────────────────────────────────────────────
+model_info = ds.get_model_metadata() if hasattr(ds, 'get_model_metadata') else {}
+confidence_str = "87.2%"  # default
+try:
+    from backend.services.model_adapter import get_model
+    m = get_model()
+    val = m.get_model_metadata().get("metrics", {}).get("f1", 0.872)
+    confidence_str = f"{val*100:.1f}%"
+except Exception:
+    pass
+
 render_kpi_row([
-    {"title": "Total Incidents", "value": f"{analytics['total_incidents']:,}", "icon": "📋"},
+    {"title": "Total Incidents", "value": f"{analytics['total_incidents']:,}", "icon": "📋", "delta": "* from training dataset"},
     {"title": "Closure Rate", "value": f"{analytics['closure_rate']}%", "icon": "🚧"},
     {"title": "Active Corridors", "value": analytics["active_corridors"], "icon": "🛤️"},
     {"title": "Avg Resolution", "value": f"{analytics['avg_resolution_minutes']:.0f} min", "icon": "⏱️"},
     {"title": "Road Closures", "value": f"{analytics['closures']:,}", "icon": "⚠️"},
-    {"title": "Model Confidence", "value": "87.2%", "icon": "🎯"},
+    {"title": "Model Confidence", "value": confidence_str, "icon": "🎯"},
 ], accent=GOLD)
 
 st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)

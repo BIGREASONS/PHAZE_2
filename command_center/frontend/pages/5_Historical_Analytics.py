@@ -142,7 +142,7 @@ with c3:
     st.download_button(
         "📄 Analytics Snapshot PDF",
         generate_executive_pdf(analytics, title="Analytics Snapshot Report"),
-        f"GridSight_AI_Analytics_{pd.Timestamp.now().strftime('%Y%m%d')}.pdf",
+        f"GridSight_AI_Analytics_{pd.Timestamp.now().strftime('%d%m%Y')}.pdf",
         "application/pdf",
         use_container_width=True
     )

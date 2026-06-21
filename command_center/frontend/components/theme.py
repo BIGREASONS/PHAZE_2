@@ -78,7 +78,7 @@ def apply_theme():
         padding-left: 5% !important; 
         padding-right: 5% !important; 
     }
-    [data-testid="stStatusWidget"] { visibility: hidden !important; display: none !important; }
+    [data-testid="stStatusWidget"] { opacity: 0.5; }
 
     /* ── Typography ───────────────────────────────────────────────── */
     h1, h2, h3, h4, h5, h6 {
@@ -141,6 +141,11 @@ def apply_theme():
         background-color: var(--bg-secondary);
         border-radius: var(--radius);
         padding: 2px;
+    }
+    
+    /* ── Headings ─────────────────────────────────────────────────── */
+    h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+        display: none !important;
     }
     .stTabs [data-baseweb="tab"] {
         background-color: transparent;
@@ -242,11 +247,13 @@ def render_footer():
         padding: 8px 24px; z-index: 999;
         display: flex; justify-content: space-between; align-items: center;
     ">
-        <span style="color: #7D857F; font-size: 0.7rem; font-family: 'Inter', sans-serif;">
-            GridSight AI Command Center &nbsp;|&nbsp; Flipkart Gridlock 2.0 &nbsp;|&nbsp; Built for Traffic Intelligence
-        </span>
-        <span style="color: #7D857F; font-size: 0.7rem; font-family: 'JetBrains Mono', monospace;">
-            v0.1.0
-        </span>
+        <div style="display: flex; justify-content: flex-end; gap: 24px; align-items: center; width: 100%; padding-right: 24px;">
+            <span style="color: #7D857F; font-size: 0.7rem; font-family: 'Inter', sans-serif;">
+                GridSight AI Command Center &nbsp;|&nbsp; Flipkart Gridlock 2.0 &nbsp;|&nbsp; Built for Traffic Intelligence
+            </span>
+            <span style="color: #7D857F; font-size: 0.7rem; font-family: 'JetBrains Mono', monospace;">
+                v1.0.0-frozen
+            </span>
+        </div>
     </div>
     """, unsafe_allow_html=True)

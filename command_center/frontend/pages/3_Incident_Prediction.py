@@ -49,7 +49,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ── Input Form ────────────────────────────────────────────────────────────
-render_section_header("Input Parameters", accent=SAPPHIRE)
+render_section_header("Input Parameters <span style='color:#B04A4A'>*</span>", accent=SAPPHIRE)
 c1, c2 = st.columns(2)
 
 with c1:
@@ -63,10 +63,24 @@ with c1:
 with c2:
     lat = st.number_input("Latitude", value=12.9716, format="%.6f", key="p_lat")
     lon = st.number_input("Longitude", value=77.5946, format="%.6f", key="p_lon")
-    d = st.date_input("Date", value=date.today(), key="p_date")
+    d = st.date_input("Date", value=date.today(), key="p_date", format="DD/MM/YYYY")
     t = st.time_input("Time", value=time(12, 0), key="p_time")
 
     st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)
+    inference_mode_raw = st.radio("Inference Mode", ["Production (Recommended)", "Research (Includes TabPFN)"], key="p_mode")
+    mode_str = "Production" if "Production" in inference_mode_raw else "Research"
+    latency_str = "< 1 second" if mode_str == "Production" else "30s–240s"
+    
+    st.markdown(f"""
+    <div style="background:{BG2};border:1px solid #232A28;border-radius:6px;padding:12px;margin-bottom:16px;">
+        <div style="color:#7D857F;font-size:0.75rem;margin-bottom:4px;">Current Mode: <span style="color:{TEXT};font-weight:600;">{mode_str}</span></div>
+        <div style="color:#7D857F;font-size:0.75rem;">Expected Latency: <span style="color:{SAPPHIRE_L};">{latency_str}</span></div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    if mode_str == "Research":
+        st.info("TabPFN is a computationally intensive foundational model. Research mode evaluations will block the server and may take 30-240 seconds to process.", icon="ℹ️")
+
     predict_clicked = st.button("Predict Closure Risk", type="primary", use_container_width=True)
 
 # ── Prediction Output ────────────────────────────────────────────────────
@@ -77,6 +91,7 @@ if predict_clicked:
         "police_station": police_station, "zone": zone,
         "latitude": lat, "longitude": lon,
         "hour": t.hour, "weekday": d.weekday(),
+        "inference_mode": mode_str
     }
     result = model.predict(features)
 

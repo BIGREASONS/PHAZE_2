@@ -18,6 +18,8 @@ from pathlib import Path
 
 import numpy as np
 
+from shared.profiler import Profiler, profile_time
+
 logger = logging.getLogger(__name__)
 
 # Captured once when this module is first imported (≈ server boot). Powers the
@@ -308,8 +310,8 @@ class ProductionEnsembleModel(ModelInterface):
             self._rf = joblib.load(d / "RandomForest.pkl")
             self._et = joblib.load(d / "ExtraTrees.pkl")
             self._logit = joblib.load(d / "Logistic.pkl")
-
-            self._tab = self._refit_tabpfn(d / "tabpfn_refit.npz")
+            
+            # Lazy load TabPFN when requested in Research Mode or if specifically enforced
 
             self._global_importances = self._compute_global_importances()
             self._baseline_row = self._compute_baseline_row()
@@ -392,7 +394,8 @@ class ProductionEnsembleModel(ModelInterface):
             rows.append(r)
         return pd.DataFrame(rows)[self.cats + self.nums]
 
-    def _calibrated_proba(self, raw):
+    @profile_time("model_adapter._calibrated_proba")
+    def _calibrated_proba(self, raw, inference_mode="Production"):
         """Return (member_matrix [N,M], calibrated [N]) for a raw feature frame.
         One predict per member; TabPFN cost is dominated by its fixed context,
         so batching N rows into a single call is near-free."""
@@ -400,16 +403,24 @@ class ProductionEnsembleModel(ModelInterface):
         xtree = np.hstack([codes, raw[self.nums].values.astype(float)])
         raw_in = raw[self.cats + self.nums]
 
-        per = {
-            "CatBoost": self._cb.predict_proba(raw_in)[:, 1],
-            "LightGBM": self._lgbm.predict_proba(xtree)[:, 1],
-            "XGBoost": self._xgb.predict_proba(xtree)[:, 1],
-            "RandomForest": self._rf.predict_proba(xtree)[:, 1],
-            "ExtraTrees": self._et.predict_proba(xtree)[:, 1],
-            "Logistic": self._logit.predict_proba(raw_in)[:, 1],
-            "TabPFN": self._tab.predict_proba(xtree)[:, 1],
-        }
-        matrix = np.column_stack([per[m] for m in self.members])
+        active_members = list(self.members)
+        if inference_mode == "Production" and "TabPFN" in active_members:
+            active_members.remove("TabPFN")
+
+        per = {}
+        for m in active_members:
+            if m == "CatBoost": per[m] = self._cb.predict_proba(raw_in)[:, 1]
+            elif m == "LightGBM": per[m] = self._lgbm.predict_proba(xtree)[:, 1]
+            elif m == "XGBoost": per[m] = self._xgb.predict_proba(xtree)[:, 1]
+            elif m == "RandomForest": per[m] = self._rf.predict_proba(xtree)[:, 1]
+            elif m == "ExtraTrees": per[m] = self._et.predict_proba(xtree)[:, 1]
+            elif m == "Logistic": per[m] = self._logit.predict_proba(raw_in)[:, 1]
+            elif m == "TabPFN":
+                if not hasattr(self, "_tab"):
+                    self._tab = self._refit_tabpfn(self.artifact_dir / "tabpfn_refit.npz")
+                per[m] = self._tab.predict_proba(xtree)[:, 1]
+
+        matrix = np.column_stack([per[m] for m in active_members])
         combined = matrix.mean(axis=1)                  # equal-weight prob_mean
         calibrated = np.asarray(self.calibrator.predict(combined), dtype=float)
         return matrix, calibrated
@@ -441,16 +452,20 @@ class ProductionEnsembleModel(ModelInterface):
         ).hexdigest()
 
     # --------------------------------------------------------------- interface
+    @profile_time("model_adapter.predict")
     def predict(self, features: Dict[str, Any]) -> Dict[str, Any]:
         if not self._loaded:
             self.load_model()
+        inference_mode = features.get("inference_mode", "Production")
         key = self._cache_key(features)
         cached = self._predict_cache.get(key)
         if cached is not None:
+            Profiler.record_cache_hit("PredictCache")
             return dict(cached)
 
+        Profiler.record_cache_miss("PredictCache")
         raw = self._to_raw_frame([features])
-        matrix, calibrated = self._calibrated_proba(raw)
+        matrix, calibrated = self._calibrated_proba(raw, inference_mode)
         prob = float(calibrated[0])
         # confidence = inter-model agreement (tight spread -> high confidence)
         spread = float(matrix[0].std())
@@ -477,8 +492,10 @@ class ProductionEnsembleModel(ModelInterface):
             self.load_model()
         if not features_list:
             return []
+        # we assume all items in the batch share the same mode if provided by the first
+        inference_mode = features_list[0].get("inference_mode", "Production") if features_list else "Production"
         raw = self._to_raw_frame(features_list)
-        matrix, calibrated = self._calibrated_proba(raw)   # single batched call
+        matrix, calibrated = self._calibrated_proba(raw, inference_mode)   # single batched call
         out = []
         for i in range(len(features_list)):
             prob = float(calibrated[i])
@@ -516,8 +533,9 @@ class ProductionEnsembleModel(ModelInterface):
                 v["longitude"] = base
             rows.append(v)
 
+        inference_mode = features.get("inference_mode", "Production")
         raw = self._to_raw_frame(rows)
-        _, calibrated = self._calibrated_proba(raw)
+        _, calibrated = self._calibrated_proba(raw, inference_mode)
         base_p = float(calibrated[0])
         contribs = {f: round(base_p - float(calibrated[i + 1]), 4)
                     for i, f in enumerate(feats)}
@@ -546,7 +564,7 @@ class ProductionEnsembleModel(ModelInterface):
         commit = (md.get("git_commit") or "")[:8]
         return {
             "name": "GridSight AI 7-Model Equal-Weight Ensemble",
-            "version": f"1.0.0-frozen ({commit})" if commit else "1.0.0-frozen",
+            "version": "1.0.0-frozen",
             "training_date": (md.get("exported_at_utc", "") or "")[:10],
             "status": "ONLINE",
             "metrics": {

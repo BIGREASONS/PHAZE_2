@@ -61,14 +61,14 @@ for row_start in range(0, len(SCENARIOS), 3):
             </div>
             """, unsafe_allow_html=True)
 
-            if st.button(f"Deploy Simulator", key=f"sc_{idx}", use_container_width=True):
+            if st.button(f"Run Scenario", key=f"sc_{idx}", use_container_width=True):
                 st.session_state.active_scenario = sc
                 st.session_state.run_sim = True
                 # st.rerun() # Let it fall through to render the simulator below
 
 # ── Emergency Response Simulator ─────────────────────────────────────────
 st.markdown("<div style='height:24px'></div>", unsafe_allow_html=True)
-render_section_header("Emergency Response Simulator", subtitle="Live telemetry feed", accent=CHAMP)
+render_section_header("Operational Simulation <span style='color:#B04A4A;font-size:0.7rem;vertical-align:middle;margin-left:8px;padding:2px 6px;border:1px solid #B04A4A;border-radius:4px;'>SIMULATED</span>", accent=CHAMP)
 
 if "active_scenario" in st.session_state and st.session_state.get("run_sim"):
     sc = st.session_state.active_scenario
@@ -120,14 +120,19 @@ if "active_scenario" in st.session_state and st.session_state.get("run_sim"):
     """, unsafe_allow_html=True)
     time.sleep(1.2)
     
-    # 4. Timeline Replay
-    for tp in [0, 5, 10, 20, 30]:
-        state = REPLAY_STATES.get(tp, REPLAY_STATES[0])
-        status_colors = {"Reported": "#B04A4A", "Acknowledged": "#B8833B", "In Progress": "#D08C4A", "Mitigation": "#2F5D9F", "Resolved": "#2EA66F"}
+    import random
+    rng = random.Random(sum(ord(c) for c in sc["name"]))
+    t_points = [0, rng.randint(3, 7), rng.randint(8, 14), rng.randint(17, 24), rng.randint(27, 36)]
+    keys = [0, 5, 10, 20, 30]
+
+    timeline_html = ""
+    for idx, tp in enumerate(t_points):
+        state = REPLAY_STATES.get(keys[idx], REPLAY_STATES[0])
+        status_colors = {"Reported": "#B04A4A", "Acknowledged": "#B8833B", "In Progress": "#D08C4A", "Mitigation": "#2F5D9F", "Resolved": "#2EA66F", "Pending Clearance": "#B8833B"}
         s_color = status_colors.get(state["status"], CHAMP)
         
-        timeline_ph.markdown(f"""
-        <div style="background:{BG2};border:1px solid #232A28;border-radius:6px;padding:20px;">
+        timeline_html += f"""
+        <div style="background:{BG2};border:1px solid #232A28;border-radius:6px;padding:20px;margin-bottom:16px;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
                 <div style="color:#F3F2EE;font-size:1.2rem;font-weight:600;">Timeline: T+{tp} min</div>
                 {render_status_badge(state['status'], s_color)}
@@ -146,7 +151,8 @@ if "active_scenario" in st.session_state and st.session_state.get("run_sim"):
                 <div style="height:100%;width:{(tp/30)*100}%;background:{s_color};transition:width 0.5s ease;"></div>
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """
+        timeline_ph.markdown(timeline_html, unsafe_allow_html=True)
         time.sleep(1.0 if tp < 30 else 0)
         
     st.session_state.run_sim = False
@@ -155,8 +161,19 @@ elif "active_scenario" not in st.session_state:
     st.markdown(f"""
     <div style="background:{BG2};border:1px solid #232A28;border-radius:6px;
         padding:32px;text-align:center;">
+        <div style="color:#B5B8B1;font-size:0.85rem;margin-bottom:12px;font-weight:600;">
+            Estimated response workflow:
+        </div>
+        <div style="color:#F3F2EE;font-size:0.95rem;margin-bottom:16px;">
+            Detection &rarr; Dispatch &rarr; Mitigation &rarr; Clearance
+        </div>
         <div style="color:#7D857F;font-size:0.85rem;">
-            Select a scenario from the library above to deploy the simulator
+            Approximate clearance window:<br>
+            <span style="color:#C2A878;font-size:1.1rem;font-weight:600;">45–60 minutes</span><br>
+            <span style="color:#B04A4A;font-size:0.7rem;">(Simulated)</span>
+        </div>
+        <div style="color:#7D857F;font-size:0.75rem;margin-top:24px;border-top:1px solid #232A28;padding-top:16px;">
+            Select a scenario from the library above to run the simulation
         </div>
     </div>
     """, unsafe_allow_html=True)

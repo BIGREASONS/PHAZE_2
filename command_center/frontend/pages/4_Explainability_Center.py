@@ -57,7 +57,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ── Global Feature Importance ─────────────────────────────────────────────
-render_section_header("Global Feature Importance", accent=COPPER)
+render_section_header("Global Feature Importance <span style='color:#7D857F;font-size:0.7rem;vertical-align:middle;margin-left:8px;'>from training database</span>", accent=COPPER)
 
 importances = model.get_global_importances()
 sorted_imp = sorted(importances.items(), key=lambda x: x[1])
@@ -76,7 +76,7 @@ fig.update_layout(
 st.plotly_chart(fig, use_container_width=True)
 
 # ── Local Explanation ─────────────────────────────────────────────────────
-render_section_header("Local Explanation", subtitle="Select an incident", accent=COPPER)
+render_section_header("Local Explanation <span style='color:#7D857F;font-size:0.7rem;vertical-align:middle;margin-left:8px;'>from training database</span>", subtitle="Select an incident", accent=COPPER)
 
 sample_ids = df["id"].head(50).tolist()
 selected_id = st.selectbox("Incident", sample_ids, key="exp_sel")
@@ -132,14 +132,22 @@ if selected_id:
 
     with c2:
         render_section_header("Top Negative Drivers", accent="#2F5D9F")
-        for d in explanation["top_negative_drivers"]:
+        if not explanation["top_negative_drivers"]:
             st.markdown(f"""
             <div style="background:{BG2};border:1px solid #232A28;border-radius:4px;
-                padding:10px 12px;margin-bottom:6px;border-left:3px solid #2F5D9F;">
-                <div style="color:#F3F2EE;font-size:0.82rem;font-weight:500;">{d['feature']}</div>
-                <div style="color:#4C7CC0;font-size:0.75rem;">{d['contribution']:.4f}</div>
+                padding:10px 12px;margin-bottom:6px;">
+                <div style="color:#7D857F;font-size:0.82rem;font-style:italic;">No negative drivers found for this prediction.</div>
             </div>
             """, unsafe_allow_html=True)
+        else:
+            for d in explanation["top_negative_drivers"]:
+                st.markdown(f"""
+                <div style="background:{BG2};border:1px solid #232A28;border-radius:4px;
+                    padding:10px 12px;margin-bottom:6px;border-left:3px solid #2F5D9F;">
+                    <div style="color:#F3F2EE;font-size:0.82rem;font-weight:500;">{d['feature']}</div>
+                    <div style="color:#4C7CC0;font-size:0.75rem;">{d['contribution']:.4f}</div>
+                </div>
+                """, unsafe_allow_html=True)
 
 # ── Confidence Distribution ───────────────────────────────────────────────
 render_section_header("Confidence Distribution", subtitle="Illustrative distribution", accent=COPPER)

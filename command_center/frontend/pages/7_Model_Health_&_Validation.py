@@ -58,7 +58,7 @@ render_kpi_row([
 # ── Performance Metrics ──────────────────────────────────────────────────
 render_section_header(
     "Performance Metrics",
-    subtitle="Placeholder values" if is_placeholder else "Rolling-origin out-of-fold (honest)",
+    subtitle="Placeholder values" if is_placeholder else "Rolling-origin out-of-fold",
     accent=SILVER,
 )
 if is_placeholder:
@@ -80,6 +80,25 @@ metric_items = [
 for col, (title, val) in zip(mc, metric_items):
     with col:
         render_metric_tile(title, val, accent=SILVER_L)
+
+# ── Drift Monitoring ──────────────────────────────────────────────────────
+render_section_header("Drift Monitoring <span style='color:#B04A4A;font-size:0.7rem;vertical-align:middle;margin-left:8px;padding:2px 6px;border:1px solid #B04A4A;border-radius:4px;'>DEMO DATA / SIMULATED</span>", accent=SILVER)
+
+st.markdown("""
+<div style="background:#121715;border:1px solid #232A28;border-radius:6px;padding:20px;margin-bottom:24px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <span style="color:#B5B8B1;font-size:0.85rem;font-weight:600;">Overall Feature Drift (PSI)</span>
+        <span style="color:#B04A4A;font-size:0.75rem;font-weight:600;">SIMULATED</span>
+    </div>
+    <div style="display:flex;align-items:flex-end;gap:12px;">
+        <span style="color:#C2A878;font-size:2rem;font-weight:700;">0.18</span>
+        <span style="color:#7D857F;font-size:0.8rem;margin-bottom:6px;">Warning Threshold: 0.20</span>
+    </div>
+    <div style="color:#7D857F;font-size:0.75rem;margin-top:8px;">
+        Drift detected in weather APIs and congestion volume patterns over the last 14 simulated days.
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
 # ── Prediction Volume ────────────────────────────────────────────────────
 render_section_header("Prediction Volume", subtitle="Last 30 days (mock)", accent=SILVER)
@@ -155,19 +174,93 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# ── Drift Monitoring ─────────────────────────────────────────────────────
-render_section_header("Drift Monitoring", accent=SILVER)
-st.markdown(f"""
-<div style="background:{BG2};border:1px solid #232A28;border-radius:6px;
-    padding:24px;text-align:center;">
-    <div style="color:{SILVER};font-size:1.5rem;margin-bottom:8px;">📊</div>
-    <div style="color:#B5B8B1;font-size:0.85rem;margin-bottom:4px;">
-        Feature drift detection will be available<br>when the final model is deployed
-    </div>
-    <div style="color:#7D857F;font-size:0.7rem;">
-        This module will monitor PSI, KL-divergence, and prediction distribution shifts
-    </div>
-</div>
-""", unsafe_allow_html=True)
+
+# ── Profiling Telemetry (Live) ─────────────────────────────────────────────
+render_section_header("Live Performance Telemetry <span style='color:#B04A4A;font-size:0.7rem;vertical-align:middle;margin-left:8px;padding:2px 6px;border:1px solid #B04A4A;border-radius:4px;'>SIMULATED</span>", accent="#B8833B")
+
+try:
+    import json
+    profile_path = os.path.join(os.path.dirname(__file__), "..", "..", "cache", "profiling_results.json")
+    if os.path.exists(profile_path) and os.environ.get("GRIDSIGHT_PROFILE") == "1":
+        with open(profile_path, "r") as f:
+            prof_data = json.load(f)
+    else:
+        prof_data = {
+            "timings": {
+                "backend.services.model_adapter._calibrated_proba": {"count": 142, "total_time": 0.08, "calls": [0.0005, 0.0007, 0.0004]},
+                "frontend.components.maps.create_cluster_layer": {"count": 15, "total_time": 1.2, "calls": [0.08]},
+            },
+            "caches": {
+                "ModelAdapter.predict": {"hits": 890, "misses": 142},
+                "DataService.get_incidents": {"hits": 450, "misses": 50}
+            }
+        }
+        
+        timings = prof_data.get("timings", {})
+        caches = prof_data.get("caches", {})
+        
+        st.markdown(f"""
+        <div style="background:{BG2};border:1px solid #232A28;border-radius:6px;padding:20px;margin-bottom:16px;">
+            <div style="color:#B8833B;font-size:0.8rem;font-weight:600;margin-bottom:12px;">
+                Instrumented Function Latencies
+            </div>
+            <table style="width:100%;color:#B5B8B1;font-size:0.8rem;text-align:left;border-collapse:collapse;">
+                <tr style="border-bottom:1px solid #232A28;color:#7D857F;font-size:0.7rem;text-transform:uppercase;">
+                    <th style="padding:8px 4px;">Function</th>
+                    <th style="padding:8px 4px;">Calls</th>
+                    <th style="padding:8px 4px;">Mean Time</th>
+                    <th style="padding:8px 4px;">Max Time</th>
+                    <th style="padding:8px 4px;">Total Time</th>
+                </tr>
+        """, unsafe_allow_html=True)
+        
+        table_rows = []
+        for func, stats in timings.items():
+            calls = stats["count"]
+            if calls > 0:
+                mean_ms = (stats["total_time"] / calls) * 1000
+                max_ms = max(stats["calls"]) * 1000
+                tot_s = stats["total_time"]
+                table_rows.append(f"""
+                <tr style="border-bottom:1px solid #1A211E;">
+                    <td style="padding:8px 4px;font-family:monospace;color:{TEXT}">{func}</td>
+                    <td style="padding:8px 4px;">{calls}</td>
+                    <td style="padding:8px 4px;">{mean_ms:.1f} ms</td>
+                    <td style="padding:8px 4px;color:#D08C4A;">{max_ms:.1f} ms</td>
+                    <td style="padding:8px 4px;">{tot_s:.2f} s</td>
+                </tr>
+                """)
+                
+        if not table_rows:
+            table_rows.append("<tr><td colspan='5' style='padding:8px;text-align:center;'>No profiling data recorded yet. Interact with the app!</td></tr>")
+            
+        st.markdown("".join(table_rows) + "</table></div>", unsafe_allow_html=True)
+        
+        if caches:
+            st.markdown(f"""
+            <div style="background:{BG2};border:1px solid #232A28;border-radius:6px;padding:20px;">
+                <div style="color:#2EA66F;font-size:0.8rem;font-weight:600;margin-bottom:12px;">
+                    Cache Hit Rates
+                </div>
+                <div style="display:flex;gap:16px;flex-wrap:wrap;">
+            """, unsafe_allow_html=True)
+            
+            for cname, cstats in caches.items():
+                hits = cstats.get("hits", 0)
+                misses = cstats.get("misses", 0)
+                total = hits + misses
+                rate = (hits / total * 100) if total > 0 else 0
+                st.markdown(f"""
+                <div style="background:#0A0D0C;border:1px solid #1A211E;border-radius:4px;padding:12px;min-width:140px;">
+                    <div style="color:#7D857F;font-size:0.65rem;text-transform:uppercase;">{cname}</div>
+                    <div style="color:{TEXT};font-size:1.2rem;font-weight:600;">{rate:.1f}%</div>
+                    <div style="color:#B5B8B1;font-size:0.7rem;">{hits} hits / {total} reqs</div>
+                </div>
+                """, unsafe_allow_html=True)
+                
+            st.markdown("</div></div>", unsafe_allow_html=True)
+
+except Exception as e:
+    st.error(f"Error reading profile data: {e}")
 
 render_footer()

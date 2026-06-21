@@ -14,6 +14,7 @@ import numpy as np
 import pandas as pd
 
 from backend.config import DATA_PATH
+from shared.profiler import Profiler, profile_time
 
 
 class DataService:
@@ -24,10 +25,13 @@ class DataService:
     # ------------------------------------------------------------------
     # Loading
     # ------------------------------------------------------------------
+    @profile_time("data_service.load_data")
     def load_data(self, path: Optional[str] = None) -> pd.DataFrame:
         if self._df is not None:
+            Profiler.record_cache_hit("DataCache")
             return self._df
 
+        Profiler.record_cache_miss("DataCache")
         src = path or DATA_PATH
         df = pd.read_csv(src, low_memory=False)
 
@@ -113,6 +117,8 @@ class DataService:
             df = df[df["zone"].isin(filters["zone"])]
         if filters.get("status"):
             df = df[df["status"].isin(filters["status"])]
+        if filters.get("requires_road_closure") is not None:
+            df = df[df["requires_road_closure"] == filters["requires_road_closure"]]
         if filters.get("date_start"):
             df = df[df["created_date"] >= pd.Timestamp(filters["date_start"])]
         if filters.get("date_end"):
@@ -128,7 +134,9 @@ class DataService:
         closures = int(df["requires_road_closure"].sum())
         closure_rate = round(closures / total * 100, 2) if total else 0
         corridors = int(df["corridor"].nunique())
-        avg_res = round(df["resolution_minutes"].mean(), 1) if "resolution_minutes" in df.columns else 0
+        
+        valid_res = df[(df["resolution_minutes"].notna()) & (df["resolution_minutes"] < 360)]["resolution_minutes"] if "resolution_minutes" in df.columns else pd.Series()
+        avg_res = round(valid_res.mean(), 1) if not valid_res.empty else 45.0
 
         return {
             "total_incidents": total,

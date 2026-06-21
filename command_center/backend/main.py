@@ -45,6 +45,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from shared.profiler import Profiler, profile_time
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+
+class PayloadSizeMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+        # To get content length, we can often read response.headers
+        content_length = response.headers.get("content-length")
+        if content_length:
+            Profiler.record_payload(request.url.path, int(content_length))
+        return response
+
+app.add_middleware(PayloadSizeMiddleware)
 
 # ---------------------------------------------------------------------------
 # Schemas
@@ -77,6 +91,7 @@ async def health():
 
 
 @app.get("/incidents")
+@profile_time("backend.get_incidents")
 async def get_incidents(
     page: int = Query(1, ge=1),
     page_size: int = Query(50, ge=1, le=200),
@@ -112,6 +127,7 @@ async def get_analytics():
 
 
 @app.post("/predict")
+@profile_time("backend.predict")
 async def predict(req: PredictRequest):
     features = req.model_dump()
     result = model.predict(features)
@@ -119,6 +135,7 @@ async def predict(req: PredictRequest):
 
 
 @app.post("/explain")
+@profile_time("backend.explain")
 async def explain(req: PredictRequest):
     features = req.model_dump()
     result = model.explain(features)
@@ -126,6 +143,7 @@ async def explain(req: PredictRequest):
 
 
 @app.get("/model-info")
+@profile_time("backend.model_info")
 async def model_info():
     return model.get_model_metadata()
 
@@ -133,10 +151,12 @@ async def model_info():
 from backend.services.mapmyindia import mapmyindia_service
 
 @app.get("/location/reverse-geocode")
+@profile_time("backend.reverse_geocode")
 async def reverse_geocode(lat: float, lon: float):
     return mapmyindia_service.reverse_geocode(lat, lon) or {}
 
 @app.get("/location/nearby")
+@profile_time("backend.nearby_places")
 async def nearby_places(lat: float, lon: float, radius: int = 1000):
     return {"places": mapmyindia_service.nearby_places(lat, lon, radius)}
 

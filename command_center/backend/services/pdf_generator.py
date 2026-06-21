@@ -47,7 +47,7 @@ def generate_executive_pdf(analytics: Dict[str, Any], title="Traffic Intelligenc
     pdf.set_text_color(0, 0, 0)
     pdf.cell(0, 10, "System Status", ln=True)
     pdf.set_font("helvetica", "", 10)
-    pdf.cell(0, 6, "All ML and telemetry streams are nominal. Model inference latency: 12ms.", ln=True)
+    pdf.cell(0, 6, "All ML and telemetry streams are nominal.", ln=True)
     pdf.ln(5)
     
     # KPIs (Closure Forecast)

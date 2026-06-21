@@ -13,6 +13,7 @@ import requests
 from functools import lru_cache
 
 from backend.config import MAPMYINDIA_API_KEY, BASE_DIR
+from shared.profiler import Profiler, profile_time
 
 logger = logging.getLogger(__name__)
 
@@ -48,8 +49,10 @@ class MapmyIndiaService:
     def _make_request(self, cache_key: str, url: str, params: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """Make a request to MapmyIndia API with caching and error handling."""
         if cache_key in self.cache:
+            Profiler.record_cache_hit("MapmyIndiaCache")
             return self.cache[cache_key]
             
+        Profiler.record_cache_miss("MapmyIndiaCache")
         if not self.api_key:
             logger.debug("MapmyIndia API key missing. Returning fallback.")
             return None
@@ -68,6 +71,7 @@ class MapmyIndiaService:
             logger.error(f"MapmyIndia API Request Exception: {e}")
             return None
 
+    @profile_time("mapmyindia.reverse_geocode")
     def reverse_geocode(self, lat: float, lon: float) -> Optional[Dict[str, str]]:
         """Convert lat/lon to a human-readable address."""
         # Round coordinates slightly to improve cache hits for nearby points
@@ -102,6 +106,7 @@ class MapmyIndiaService:
             "pincode": result.get("pincode", "")
         }
 
+    @profile_time("mapmyindia.nearby_places")
     def nearby_places(self, lat: float, lon: float, radius: int = 1000) -> List[Dict[str, str]]:
         """Find notable landmarks near the location."""
         rlat, rlon = round(lat, 4), round(lon, 4)

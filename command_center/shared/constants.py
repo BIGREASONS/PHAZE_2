@@ -180,5 +180,5 @@ REPLAY_STATES = {
     5:  {"status": "Acknowledged",    "resources": 1, "action": "First responder dispatched"},
     10: {"status": "In Progress",     "resources": 2, "action": "Assessment complete, backup requested"},
     20: {"status": "Mitigation",      "resources": 3, "action": "Road diversion active, crew on site"},
-    30: {"status": "Resolved",        "resources": 1, "action": "Road cleared, traffic normalising"},
+    30: {"status": "Pending Clearance", "resources": 2, "action": "Clearance ongoing, estimating 45-60 min to unblock"},
 }

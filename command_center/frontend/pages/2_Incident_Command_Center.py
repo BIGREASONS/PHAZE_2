@@ -9,6 +9,8 @@ st.set_page_config(page_title="GridSight AI Command Center", page_icon="🚦", l
 import pandas as pd
 from datetime import datetime, timedelta
 
+from shared.profiler import profile_time
+
 from frontend.components.theme import apply_theme, render_footer
 from frontend.components.ui import render_section_header, render_status_badge
 from frontend.components.maps import (
@@ -88,22 +90,22 @@ with left:
     for _, row in filtered.head(20).iterrows():
         is_closure = row.get("requires_road_closure", 0)
         badge_color = "#B04A4A" if is_closure else JADE
-        badge_label = "CLOSURE" if is_closure else "OPEN"
+        badge_label = "CLOSURE" if is_closure else "ROAD CLEARED"
         st.markdown(f"""
         <div style="background:#121715;border:1px solid #232A28;border-radius:4px;
             padding:10px 12px;margin-bottom:6px;border-left:3px solid {badge_color};
             cursor:pointer;transition:background 150ms;">
             <div style="display:flex;justify-content:space-between;align-items:center;">
                 <span style="color:#F3F2EE;font-size:0.78rem;font-weight:500;">
-                    {row.get('id','--')[:12]}
+                    {row.get('event_cause','--')} ({row.get('id','--')[:12]})
                 </span>
                 {render_status_badge(badge_label, badge_color)}
             </div>
             <div style="color:#B5B8B1;font-size:0.7rem;margin-top:4px;">
-                {row.get('event_cause','--')} &middot; {row.get('corridor','--')}
+                {row.get('corridor','--')} &middot; {row.get('zone','--')}
             </div>
             <div style="color:#7D857F;font-size:0.65rem;margin-top:2px;">
-                {str(row.get('created_date',''))[:16]}
+                {pd.to_datetime(row.get('created_date')).strftime('%d/%m/%Y %H:%M') if pd.notna(row.get('created_date')) else '--'}
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -113,9 +115,9 @@ with center:
     render_section_header("Operations Map", accent=JADE)
 
     mc1, mc2, mc3 = st.columns(3)
-    show_incidents = mc1.checkbox("Incidents", True, key="icc_mi")
+    show_incidents = mc1.checkbox("Incidents", False, key="icc_mi")
     show_heatmap = mc2.checkbox("Heatmap", False, key="icc_mh")
-    show_clusters = mc3.checkbox("Clusters", False, key="icc_mc")
+    show_clusters = mc3.checkbox("Clusters", True, key="icc_mc")
 
     map_data = ds.get_map_data(filters)
     if not map_data.empty:
@@ -132,7 +134,11 @@ with center:
 
         if layers:
             deck = create_operations_map(layers, height=520)
-            st.pydeck_chart(deck)
+            
+            @profile_time("frontend.st_pydeck_chart")
+            def _render_deck():
+                st.pydeck_chart(deck)
+            _render_deck()
         else:
             st.info("Toggle a layer to display the map.")
     else:
@@ -168,14 +174,22 @@ with right:
                 host = API_HOST if API_HOST != "0.0.0.0" else "127.0.0.1"
                 
                 # Fetch Reverse Geocode
-                loc_resp = requests.get(f"http://{host}:{API_PORT}/location/reverse-geocode?lat={lat}&lon={lon}", timeout=2.0)
+                @profile_time("frontend.api_reverse_geocode")
+                def _fetch_rev_geo():
+                    return requests.get(f"http://{host}:{API_PORT}/location/reverse-geocode?lat={lat}&lon={lon}", timeout=2.0)
+                loc_resp = _fetch_rev_geo()
+                
                 if loc_resp.status_code == 200:
                     loc_data = loc_resp.json()
                     if loc_data and "formatted_address" in loc_data:
                         location_str = loc_data["formatted_address"]
                 
                 # Fetch Nearby Places
-                nb_resp = requests.get(f"http://{host}:{API_PORT}/location/nearby?lat={lat}&lon={lon}", timeout=2.0)
+                @profile_time("frontend.api_nearby")
+                def _fetch_nearby():
+                    return requests.get(f"http://{host}:{API_PORT}/location/nearby?lat={lat}&lon={lon}", timeout=2.0)
+                nb_resp = _fetch_nearby()
+                
                 if nb_resp.status_code == 200:
                     nb_data = nb_resp.json()
                     nearby_places = nb_data.get("places", [])

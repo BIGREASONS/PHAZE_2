@@ -28,16 +28,39 @@ st.set_page_config(
 apply_theme()
 
 # ── Init Session State ───────────────────────────────────────────────────
-if "model" not in st.session_state:
-    st.session_state.model = get_model()
-    st.session_state.model.load_model()
-
-if "data_service" not in st.session_state:
-    st.session_state.data_service = DataService()
-    st.session_state.data_service.load_data()
-
-if "prediction_history" not in st.session_state:
-    st.session_state.prediction_history = []
+if "app_initialized" not in st.session_state:
+    import time
+    start_time = time.time()
+    
+    loading_ph = st.empty()
+    with loading_ph.container():
+        st.markdown("""
+        <div style="text-align:center;padding-top:150px;">
+            <div style="font-size:3rem;margin-bottom:16px;animation: pulse 1.5s infinite;">⏳</div>
+            <h2 style="color:#F3F2EE;">Initializing GridSight AI...</h2>
+            <p style="color:#7D857F;">Loading Ensembles and ASTRaM Dataset into memory.</p>
+        </div>
+        """, unsafe_allow_html=True)
+    time.sleep(0.1)  # Force flush
+    
+    if "model" not in st.session_state:
+        st.session_state.model = get_model()
+        st.session_state.model.load_model()
+        
+    if "data_service" not in st.session_state:
+        st.session_state.data_service = DataService()
+        st.session_state.data_service.load_data()
+        
+    if "prediction_history" not in st.session_state:
+        st.session_state.prediction_history = []
+        
+    # Prevent loader flashing by ensuring it displays for at least 2 seconds
+    elapsed = time.time() - start_time
+    if elapsed < 2.0:
+        time.sleep(2.0 - elapsed)
+        
+    loading_ph.empty()
+    st.session_state.app_initialized = True
 
 # ── Sidebar ───────────────────────────────────────────────────────────────
 st.sidebar.markdown("""
@@ -60,6 +83,14 @@ render_sidebar_health(model_info, data_rows)
 
 st.sidebar.markdown("---")
 st.sidebar.markdown("""
+<div style="background:#121715;border:1px solid #232A28;border-radius:6px;padding:12px;margin:16px 0;">
+    <div style="color:#F3F2EE;font-size:0.8rem;font-weight:600;margin-bottom:8px;">GridSight AI</div>
+    <div style="color:#7D857F;font-size:0.7rem;margin-bottom:4px;">Version: 1.0.0-frozen</div>
+    <div style="color:#7D857F;font-size:0.7rem;margin-bottom:4px;">Status: <span style="color:#1C7C54;font-weight:600;">Ready</span></div>
+    <div style="color:#7D857F;font-size:0.7rem;margin-bottom:4px;">Inference Mode: Production</div>
+    <div style="color:#7D857F;font-size:0.7rem;margin-bottom:4px;">Map Layer: Clusters</div>
+    <div style="color:#7D857F;font-size:0.7rem;margin-bottom:4px;line-height:1.3;">Dataset:<br>ASTRaM Traffic Incident Dataset</div>
+</div>
 <div style="color:#7D857F;font-size:0.65rem;padding:8px 0;">
     Flipkart Gridlock 2.0<br>
     Bengaluru Traffic Police
@@ -80,7 +111,8 @@ st.markdown("""
         <div style="background:#121715;border:1px solid #232A28;border-radius:6px;
             padding:16px 24px;min-width:140px;">
             <div style="color:#C2A878;font-size:1.8rem;font-weight:700;">{0:,}</div>
-            <div style="color:#7D857F;font-size:0.7rem;text-transform:uppercase;">Incidents</div>
+            <div style="color:#7D857F;font-size:0.7rem;text-transform:uppercase;">Training Incidents</div>
+            <div style="color:#7D857F;font-size:0.6rem;margin-top:2px;">from training dataset</div>
         </div>
         <div style="background:#121715;border:1px solid #232A28;border-radius:6px;
             padding:16px 24px;min-width:140px;">

@@ -8,6 +8,8 @@ from typing import List, Optional, Tuple
 import pandas as pd
 import pydeck as pdk
 
+from shared.profiler import profile_time
+
 MAP_STYLE = "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
 DEFAULT_CENTER = (12.9716, 77.5946)
 DEFAULT_ZOOM = 11
@@ -116,6 +118,7 @@ def create_station_layer(data: pd.DataFrame) -> pdk.Layer:
     )
 
 
+@profile_time("frontend.create_operations_map")
 def create_operations_map(
     layers: List[pdk.Layer],
     center: Tuple[float, float] = DEFAULT_CENTER,

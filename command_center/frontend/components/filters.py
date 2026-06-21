@@ -44,10 +44,10 @@ def render_global_filters(df: pd.DataFrame, key_prefix: str = "gf") -> Dict[str,
             if pd.notna(min_date) and pd.notna(max_date):
                 d1, d2 = st.columns(2)
                 with d1:
-                    start = st.date_input("From", value=min_date.date(), key=f"{key_prefix}_ds")
+                    start = st.date_input("From", value=min_date.date(), key=f"{key_prefix}_ds", format="DD/MM/YYYY")
                     filters["date_start"] = str(start)
                 with d2:
-                    end = st.date_input("To", value=max_date.date(), key=f"{key_prefix}_de")
+                    end = st.date_input("To", value=max_date.date(), key=f"{key_prefix}_de", format="DD/MM/YYYY")
                     filters["date_end"] = str(end)
 
     return filters
