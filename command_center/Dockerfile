@@ -14,6 +14,7 @@ RUN pip install --no-cache-dir -r command_center/requirements.txt
 # Copy application code and artifacts
 COPY command_center/ command_center/
 COPY final_validation/artifacts/ final_validation/artifacts/
+COPY "Astram event data_anonymized - Astram event data_anonymizedb40ac87.csv" .
 
 ENV PYTHONPATH=/app
 ENV ASTRAM_ARTIFACT_DIR=/app/final_validation/artifacts
