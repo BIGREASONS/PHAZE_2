@@ -85,14 +85,35 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-if st.button("Check TabPFN Resource Readiness", type="primary"):
-    res = model.ensure_tabpfn_loaded()
-    if res.get("status") == "unsupported":
-        st.error(f"TabPFN Initialization Prevented: {res.get('reason')}")
-    elif res.get("status") == "error":
-        st.error(f"TabPFN Initialization Error: {res.get('reason')}")
-    else:
-        st.success("TabPFN Successfully Initialized.")
-        st.rerun()
-
-st.info("Render Free/Starter instances have 512MB RAM, which is insufficient for TabPFN. This page helps judges verify the system gracefully degrading instead of crashing.", icon="ℹ️")
+st.markdown(f"""
+<div style="background:{BG2};border:1px solid #232A28;border-radius:6px;padding:20px;margin-bottom:16px;">
+    <h3 style="margin-top:0;color:{SAPPHIRE};font-size:1.1rem;margin-bottom:16px;">Research Mode</h3>
+    <table style="width:100%;text-align:left;border-collapse:collapse;color:#A9B1AC;">
+        <tr style="border-bottom:1px solid #232A28;">
+            <td style="padding:12px 0;width:40px;font-size:1.2rem;">⚠️</td>
+            <td style="padding:12px 0;font-weight:600;color:{TEXT};">Status</td>
+            <td style="padding:12px 0;color:#B04A4A;">Not Enabled On Hosted Tier</td>
+        </tr>
+        <tr style="border-bottom:1px solid #232A28;">
+            <td style="padding:12px 0;width:40px;font-size:1.2rem;">ℹ️</td>
+            <td style="padding:12px 0;font-weight:600;color:{TEXT};">Reason</td>
+            <td style="padding:12px 0;">Resource-Constrained Deployment</td>
+        </tr>
+        <tr style="border-bottom:1px solid #232A28;">
+            <td style="padding:12px 0;width:40px;font-size:1.2rem;">✅</td>
+            <td style="padding:12px 0;font-weight:600;color:{TEXT};">Production Ensemble</td>
+            <td style="padding:12px 0;color:#2EA66F;">Active</td>
+        </tr>
+        <tr style="border-bottom:1px solid #232A28;">
+            <td style="padding:12px 0;width:40px;font-size:1.2rem;">✅</td>
+            <td style="padding:12px 0;font-weight:600;color:{TEXT};">TabPFN</td>
+            <td style="padding:12px 0;color:#2EA66F;">Included In Source Code</td>
+        </tr>
+        <tr>
+            <td style="padding:12px 0;width:40px;font-size:1.2rem;">✅</td>
+            <td style="padding:12px 0;font-weight:600;color:{TEXT};">Open-Source Availability</td>
+            <td style="padding:12px 0;color:#2EA66F;">Available</td>
+        </tr>
+    </table>
+</div>
+""", unsafe_allow_html=True)

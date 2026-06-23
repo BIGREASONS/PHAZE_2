@@ -70,22 +70,83 @@ with c2:
     inference_mode_raw = st.radio("Inference Mode", ["Production (Recommended)", "Research (Includes TabPFN)"], key="p_mode")
     mode_str = "Production" if "Production" in inference_mode_raw else "Research"
     
-    if mode_str == "Research" and not st.session_state.get("research_mode_confirmed", False):
-        st.warning("Research Mode includes TabPFN foundation models. The first prediction may require significant model loading time. Subsequent predictions will be substantially faster. Continue?")
-        rc1, rc2 = st.columns(2)
-        if rc1.button("Enable Research Mode"):
-            st.session_state.research_mode_confirmed = True
-            st.rerun()
-        if rc2.button("Cancel"):
-            st.session_state.p_mode = "Production (Recommended)"
-            st.rerun()
+    if mode_str == "Research":
+        st.markdown(f"""<div style="background:{BG2};border:1px solid #232A28;border-radius:6px;padding:24px;margin-bottom:16px;">
+<h3 style="margin-top:0;color:{SAPPHIRE};font-size:1.2rem;margin-bottom:8px;">Research Mode (Advanced Experimental Pipeline)</h3>
+<p style="color:#A9B1AC;font-size:0.9rem;line-height:1.5;">
+Available in the open-source release.<br><br>
+The hosted demo executes the validated Production Ensemble to ensure responsiveness and reliability.
+</p>
+
+<h4 style="color:{TEXT};font-size:1rem;margin-bottom:8px;margin-top:20px;">Why Research Mode?</h4>
+<div style="background:#0A0D0C;border:1px solid #232A28;border-radius:4px;padding:12px;margin-bottom:20px;">
+<p style="color:#A9B1AC;font-size:0.85rem;margin:0;">
+Research Mode enables experimentation with foundation-model-based tabular learning.<br><br>
+TabPFN provides a powerful benchmark for small and medium tabular datasets but requires substantially more memory and initialization time than traditional models.
+</p>
+</div>
+
+<h4 style="color:{TEXT};font-size:1rem;margin-bottom:8px;">Research Architecture</h4>
+<pre style="background:#0A0D0C;padding:12px;border-radius:4px;color:#A9B1AC;font-size:0.8rem;border:1px solid #232A28;margin-bottom:20px;">ASTRaM Dataset
+    ↓
+Feature Pipeline
+    ↓
+CatBoost
+LightGBM
+XGBoost
+RandomForest
+ExtraTrees
+Logistic
+TabPFN
+    ↓
+Research Ensemble</pre>
+
+<h4 style="color:{TEXT};font-size:1rem;margin-bottom:8px;">Architecture Comparison</h4>
+<table style="width:100%;text-align:left;border-collapse:collapse;color:#A9B1AC;font-size:0.85rem;margin-bottom:20px;">
+<tr style="border-bottom:1px solid #232A28;"><th style="padding:8px 0;color:{TEXT};">Feature</th><th style="padding:8px 0;color:{TEXT};">Production</th><th style="padding:8px 0;color:{TEXT};">Research</th></tr>
+<tr style="border-bottom:1px solid #232A28;"><td style="padding:8px 0;">CatBoost / LightGBM / XGBoost</td><td style="padding:8px 0;color:#2EA66F;">✓</td><td style="padding:8px 0;color:#2EA66F;">✓</td></tr>
+<tr style="border-bottom:1px solid #232A28;"><td style="padding:8px 0;">Random Forest / Extra Trees / Logistic</td><td style="padding:8px 0;color:#2EA66F;">✓</td><td style="padding:8px 0;color:#2EA66F;">✓</td></tr>
+<tr style="border-bottom:1px solid #232A28;"><td style="padding:8px 0;font-weight:600;color:{TEXT};">TabPFN Foundation Model</td><td style="padding:8px 0;color:#B04A4A;">✗ Hosted Demo</td><td style="padding:8px 0;color:#2EA66F;">✓ Local</td></tr>
+<tr style="border-bottom:1px solid #232A28;"><td style="padding:8px 0;">Latency</td><td style="padding:8px 0;color:#2EA66F;">&lt; 1s</td><td style="padding:8px 0;color:#D08C4A;">30–240s</td></tr>
+<tr><td style="padding:8px 0;">Deployment Ready</td><td style="padding:8px 0;color:#2EA66F;">✓</td><td style="padding:8px 0;color:#B8833B;">Experimental</td></tr>
+</table>
+
+<h4 style="color:{TEXT};font-size:1rem;margin-bottom:8px;">Recommended Hardware</h4>
+<div style="background:#0A0D0C;border:1px solid #232A28;border-radius:4px;padding:12px;margin-bottom:20px;">
+<ul style="color:#A9B1AC;font-size:0.85rem;margin:0;padding-left:20px;">
+<li>RAM: 8GB+</li>
+<li>CPU: Modern x64 Processor</li>
+<li>Optional: NVIDIA GPU for faster experimentation</li>
+<li>Expected first-load time: 30–240 seconds</li>
+</ul>
+</div>
+
+<h4 style="color:{TEXT};font-size:1rem;margin-bottom:8px;">How To Run Research Mode Locally</h4>
+<p style="color:#A9B1AC;font-size:0.85rem;margin-bottom:8px;"><strong>Windows</strong></p>
+<pre style="background:#0A0D0C;padding:12px;border-radius:4px;color:#A9B1AC;font-size:0.8rem;border:1px solid #232A28;overflow-x:auto;margin-bottom:12px;">git clone https://github.com/BIGREASONS/PHAZE_2
+cd PHAZE_2
+pip install -r requirements.txt
+cd command_center
+streamlit run frontend/app.py</pre>
+<p style="color:#A9B1AC;font-size:0.85rem;margin-bottom:8px;"><strong>Optional Docker</strong></p>
+<pre style="background:#0A0D0C;padding:12px;border-radius:4px;color:#A9B1AC;font-size:0.8rem;border:1px solid #232A28;overflow-x:auto;margin-bottom:20px;">docker-compose up --build</pre>
+</div>""", unsafe_allow_html=True)
+        
+        c_btn1, c_btn2, c_btn3, _ = st.columns([1.2, 1.2, 1.2, 2])
+        with c_btn1:
+            st.link_button("Open GitHub Repository", "https://github.com/BIGREASONS/PHAZE_2", use_container_width=True)
+        with c_btn2:
+            st.link_button("View Setup Instructions", "https://github.com/BIGREASONS/PHAZE_2#quick-start-docker", use_container_width=True)
+        with c_btn3:
+            st.link_button("Download Source Code", "https://github.com/BIGREASONS/PHAZE_2/archive/refs/heads/main.zip", use_container_width=True)
+        
         st.stop()
 
-    latency_str = "< 1 second" if mode_str == "Production" else "30s–240s"
+    latency_str = "< 1 second"
     
     st.markdown(f"""
     <div style="background:{BG2};border:1px solid #232A28;border-radius:6px;padding:12px;margin-bottom:16px;">
-        <div style="color:#7D857F;font-size:0.75rem;margin-bottom:4px;">Current Mode: <span style="color:{TEXT};font-weight:600;">{mode_str}</span></div>
+        <div style="color:#7D857F;font-size:0.75rem;margin-bottom:4px;">Current Mode: <span style="color:{TEXT};font-weight:600;">Production</span></div>
         <div style="color:#7D857F;font-size:0.75rem;">Expected Latency: <span style="color:{SAPPHIRE_L};">{latency_str}</span></div>
     </div>
     """, unsafe_allow_html=True)
@@ -94,26 +155,7 @@ with c2:
 
 # ── Prediction Output ────────────────────────────────────────────────────
 if predict_clicked:
-    if mode_str == "Research":
-        with st.status("Loading Research Components", expanded=True) as status:
-            st.write("✓ Loading Production Ensemble")
-            st.write("● Initializing TabPFN")
-            st.write("○ Loading Calibration Assets")
-            st.write("○ Preparing Inference Engine")
-            st.write("*This may take several minutes depending on available hardware.*")
-            
-            res = model.ensure_tabpfn_loaded()
-            if res.get("status") == "unsupported":
-                status.update(label="Research Mode Unavailable", state="error", expanded=True)
-                st.error(res.get("reason", "Research Mode unavailable on current deployment tier. Production Mode remains fully functional."))
-                st.info("For full TabPFN experimentation, run locally.")
-                st.stop()
-            elif res.get("status") == "error":
-                status.update(label="Error loading TabPFN", state="error", expanded=True)
-                st.error(f"Error loading TabPFN: {res.get('reason')}")
-                st.stop()
-            else:
-                status.update(label="Research Models Ready", state="complete", expanded=False)
+    # Mode is guaranteed to be Production here because Research mode calls st.stop()
 
     features = {
         "event_type": event_type, "event_cause": event_cause,

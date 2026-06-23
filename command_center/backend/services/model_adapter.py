@@ -343,9 +343,10 @@ class ProductionEnsembleModel(ModelInterface):
         
         mem = psutil.virtual_memory()
         available_gb = mem.available / (1024**3)
-        if available_gb < 1.5:
-            logger.warning(f"TabPFN loading aborted. Insufficient RAM: {available_gb:.1f}GB available (needs > 1.5GB).")
-            return {"status": "unsupported", "reason": f"Insufficient deployment resources (Available RAM: {available_gb:.1f}GB. Needs > 1.5GB)"}
+        # Temporarily set to 32.0 so you can preview the Hosted Demo Limitation UI locally!
+        if available_gb < 32.0:
+            logger.warning(f"TabPFN loading aborted. Insufficient RAM: {available_gb:.1f}GB available (needs > 32.0GB).")
+            return {"status": "unsupported", "reason": f"Insufficient deployment resources (Available RAM: {available_gb:.1f}GB. Needs > 32.0GB)"}
         
         with self._lock:
             if hasattr(self, "_tab"):

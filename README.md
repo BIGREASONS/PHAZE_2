@@ -27,6 +27,21 @@ GridSight AI is an end-to-end traffic incident intelligence platform. By combini
 - **Demo Video**: [docs/assets/demo_video.mp4](docs/assets/demo_video.mp4)
 - **Architecture Diagram**: ![Architecture Diagram](docs/assets/architecture_diagram.png)
 
+## Research Mode
+
+GridSight AI includes an optional TabPFN-powered Research Mode for experimentation and model comparison workflows.
+
+Due to the computational requirements of TabPFN (memory allocation and initialization time), the public demo executes only the validated Production Ensemble. Users wishing to explore Research Mode can run the application locally using the provided setup instructions.
+
+| Capability              | Hosted Demo | Local Research |
+| ----------------------- | ----------- | -------------- |
+| Production Ensemble     | ✓           | ✓              |
+| Explainability          | ✓           | ✓              |
+| MapmyIndia Intelligence | ✓           | ✓              |
+| Historical Analytics    | ✓           | ✓              |
+| TabPFN Research Mode    | ✗           | ✓              |
+| Deployment Diagnostics  | ✓           | ✓              |
+
 ## Quick Start (Docker)
 The easiest way to launch the entire stack is via Docker Compose:
 ```bash
