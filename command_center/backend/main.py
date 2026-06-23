@@ -74,6 +74,7 @@ class PredictRequest(BaseModel):
     longitude: float = 77.5946
     hour: int = 12
     weekday: int = 2
+    inference_mode: str = "Production"
 
 
 # ---------------------------------------------------------------------------
@@ -146,6 +147,12 @@ async def explain(req: PredictRequest):
 @profile_time("backend.model_info")
 async def model_info():
     return model.get_model_metadata()
+
+
+@app.post("/ensure-tabpfn")
+@profile_time("backend.ensure_tabpfn")
+async def ensure_tabpfn():
+    return model.ensure_tabpfn_loaded()
 
 
 from backend.services.mapmyindia import mapmyindia_service

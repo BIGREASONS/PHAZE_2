@@ -106,6 +106,17 @@ class ModelInterface(ABC):
             {"corridor": 0.28, "event_cause": 0.22, ...}
         """
 
+    @abstractmethod
+    def ensure_tabpfn_loaded(self) -> Dict[str, Any]:
+        """Lazy load TabPFN if not loaded and system resources permit.
+        
+        Expected Output Schema:
+            {
+                "status": str ("ready", "unsupported", "error"),
+                "reason": str (Optional message)
+            }
+        """
+
 
 # ═══════════════════════════════════════════════════════════════════════════
 # PlaceholderModel — deterministic fallback (served only when artifacts absent)
@@ -142,6 +153,9 @@ class PlaceholderModel(ModelInterface):
 
     def load_model(self) -> None:
         """No-op for placeholder."""
+
+    def ensure_tabpfn_loaded(self) -> Dict[str, Any]:
+        return {"status": "unsupported", "reason": "Placeholder model is active"}
 
     def predict(self, features: Dict[str, Any]) -> Dict[str, Any]:
         seed = int(
@@ -229,6 +243,7 @@ class PlaceholderModel(ModelInterface):
                 "recall": 0.4146,
             },
             "note": "Fallback model — metrics mirror the frozen ensemble's honest OOF values",
+            "tabpfn_loaded": False,
         }
 
 
@@ -320,6 +335,30 @@ class ProductionEnsembleModel(ModelInterface):
                 "ProductionEnsembleModel loaded: %d members from %s",
                 len(self.members), d,
             )
+
+    def ensure_tabpfn_loaded(self) -> Dict[str, Any]:
+        import psutil
+        if hasattr(self, "_tab"):
+            return {"status": "ready"}
+        
+        mem = psutil.virtual_memory()
+        available_gb = mem.available / (1024**3)
+        if available_gb < 1.5:
+            logger.warning(f"TabPFN loading aborted. Insufficient RAM: {available_gb:.1f}GB available (needs > 1.5GB).")
+            return {"status": "unsupported", "reason": f"Insufficient deployment resources (Available RAM: {available_gb:.1f}GB. Needs > 1.5GB)"}
+        
+        with self._lock:
+            if hasattr(self, "_tab"):
+                return {"status": "ready"}
+            try:
+                self._tab = self._refit_tabpfn(self.artifact_dir / "tabpfn_refit.npz")
+                return {"status": "ready"}
+            except MemoryError:
+                logger.error("Out Of Memory while loading TabPFN")
+                return {"status": "unsupported", "reason": "Out Of Memory while loading TabPFN"}
+            except Exception as e:
+                logger.exception("Error loading TabPFN")
+                return {"status": "error", "reason": str(e)}
 
     def _refit_tabpfn(self, npz_path: Path):
         """Reconstruct the frozen TabPFN exactly as the manifest prescribes:
@@ -580,6 +619,8 @@ class ProductionEnsembleModel(ModelInterface):
             "members": list(self.members),
             "combiner": self.manifest.get("combiner", "prob_mean"),
             "validation": md.get("validation", ""),
+            "git_commit": commit,
+            "tabpfn_loaded": hasattr(self, "_tab"),
             "note": "Frozen incumbent — equal-weight probability average, "
                     "isotonic-calibrated. Validation gate: FREEZE.",
         }

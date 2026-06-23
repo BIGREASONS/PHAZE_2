@@ -32,3 +32,5 @@ command_center/cache/
 # The artifacts dir has its own .gitignore in final_validation/artifacts/
 final_validation/cache/
 final_validation/results/*.npy
+.ipynb_checkpoints/
+cache/

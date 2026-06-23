@@ -69,6 +69,18 @@ with c2:
     st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)
     inference_mode_raw = st.radio("Inference Mode", ["Production (Recommended)", "Research (Includes TabPFN)"], key="p_mode")
     mode_str = "Production" if "Production" in inference_mode_raw else "Research"
+    
+    if mode_str == "Research" and not st.session_state.get("research_mode_confirmed", False):
+        st.warning("Research Mode includes TabPFN foundation models. The first prediction may require significant model loading time. Subsequent predictions will be substantially faster. Continue?")
+        rc1, rc2 = st.columns(2)
+        if rc1.button("Enable Research Mode"):
+            st.session_state.research_mode_confirmed = True
+            st.rerun()
+        if rc2.button("Cancel"):
+            st.session_state.p_mode = "Production (Recommended)"
+            st.rerun()
+        st.stop()
+
     latency_str = "< 1 second" if mode_str == "Production" else "30s–240s"
     
     st.markdown(f"""
@@ -78,13 +90,31 @@ with c2:
     </div>
     """, unsafe_allow_html=True)
     
-    if mode_str == "Research":
-        st.info("TabPFN is a computationally intensive foundational model. Research mode evaluations will block the server and may take 30-240 seconds to process.", icon="ℹ️")
-
     predict_clicked = st.button("Predict Closure Risk", type="primary", use_container_width=True)
 
 # ── Prediction Output ────────────────────────────────────────────────────
 if predict_clicked:
+    if mode_str == "Research":
+        with st.status("Loading Research Components", expanded=True) as status:
+            st.write("✓ Loading Production Ensemble")
+            st.write("● Initializing TabPFN")
+            st.write("○ Loading Calibration Assets")
+            st.write("○ Preparing Inference Engine")
+            st.write("*This may take several minutes depending on available hardware.*")
+            
+            res = model.ensure_tabpfn_loaded()
+            if res.get("status") == "unsupported":
+                status.update(label="Research Mode Unavailable", state="error", expanded=True)
+                st.error(res.get("reason", "Research Mode unavailable on current deployment tier. Production Mode remains fully functional."))
+                st.info("For full TabPFN experimentation, run locally.")
+                st.stop()
+            elif res.get("status") == "error":
+                status.update(label="Error loading TabPFN", state="error", expanded=True)
+                st.error(f"Error loading TabPFN: {res.get('reason')}")
+                st.stop()
+            else:
+                status.update(label="Research Models Ready", state="complete", expanded=False)
+
     features = {
         "event_type": event_type, "event_cause": event_cause,
         "veh_type": veh_type, "corridor": corridor,
