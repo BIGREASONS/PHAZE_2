@@ -20,4 +20,4 @@ ENV ASTRAM_ARTIFACT_DIR=/app/final_validation/artifacts
 
 EXPOSE 8000 8501
 
-CMD ["sh", "-c", "uvicorn command_center.backend.main:app --host 0.0.0.0 --port 8000 & streamlit run command_center/frontend/app.py --server.port 8501 --server.address 0.0.0.0 --server.headless true"]
+CMD ["sh", "-c", "uvicorn command_center.backend.main:app --host 0.0.0.0 --port 8000 & exec streamlit run command_center/frontend/app.py --server.port ${PORT:-8501} --server.address 0.0.0.0 --server.headless true"]
